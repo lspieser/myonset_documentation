@@ -1,0 +1,698 @@
+
+<!DOCTYPE html>
+
+<html lang="english">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Automatic detection of EMG busts &#8212; Myonset 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Events class and functions" href="guide_events.html" />
+    <link rel="prev" title="Myonset QuickStart" href="quickstart.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="guide_events.html" title="Events class and functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="Myonset QuickStart"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Myonset 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Automatic detection of EMG busts</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="automatic-detection-of-emg-busts">
+<h1>Automatic detection of EMG busts<a class="headerlink" href="#automatic-detection-of-emg-busts" title="Permalink to this headline">¶</a></h1>
+<p>Myonset integrates several tools for the processing of electromyographic data signals.
+Those tools should be used in combination of our visualization tool, allowing easy visualization and manual correction of EMG onset and offset markers (see <a class="reference internal" href="guide_vizEMG.html#guide-vizemg"><span class="std std-ref">viz module guide</span></a>).</p>
+<p>Myonset contains signal processing functions, methods for automatic detection, and two algorithms combining different automatic detection methods, intended to result in
+optimized automatic detection. Both algorithms consist in a two-steps method: first step is to individualize EMG burst(s) present in the signal,
+while second step is to determine the latency at which each EMG burst starts (onset) and ends (offset). The first step is based on a threshold method, different between
+the two algorithms (custom single threshold in <cite>get_onsets</cite> function, and double threshold in <cite>get_onsets_dbl_th</cite>), while the second step is always performed using the
+‘integrated profile’ method. All those methods and their combination are described in details below.</p>
+<section id="methods-overview">
+<h2>1. Methods overview<a class="headerlink" href="#methods-overview" title="Permalink to this headline">¶</a></h2>
+<p>Numerous methods have been proposed to determine EMG bursts onset and offset, but none has been shown to be as good as human visual detection.
+Accordingly, our intention here is not to provide a perfect automatized detection, but rather to improve automatic detection as much as possible,
+and make the unavoidable manual correction step as easy as possible (see <a class="reference internal" href="guide_vizEMG.html#guide-vizemg"><span class="std std-ref">viz module guide</span></a> for manual correction).
+DEBut automatic detection is based on different methods previously proposed for EMG signal processing. <a class="reference internal" href="#figure1"><span class="std std-ref">Figure 1</span></a> illustrates the application of those different methods
+on a raw EMG signal (shown on <a class="reference internal" href="#figure1"><span class="std std-ref">Figure 1</span></a>, top left). As can be seen, each approach presents different benefits and drawbacks:</p>
+<ul class="simple">
+<li><p>The frequently-used variance threshold methods, illustrated on top right panel of <a class="reference internal" href="#figure1"><span class="std std-ref">Figure 1</span></a>, detect EMG activity when signal amplitude exceeds some threshold value computed from the EMG signal mean and variance (see for instance Hodges and Bui, 1996 <a class="reference internal" href="#hobu96" id="id1"><span>[HoBu96]</span></a>). This method accurately detects periods of active EMG, but tends to over-estimate EMG onset and under-estimate EMG offset.</p></li>
+<li><p>The ‘integrated profile’ method (Santello and McDonagh, 1998 <a class="reference internal" href="#samc98" id="id2"><span>[SaMc98]</span></a>) provides an accurate detection of burst onset and offset in most cases, but can be used only when one EMG burst has occurred (not less, not more). This method is shown in <a class="reference internal" href="#figure1"><span class="std std-ref">Figure 1</span></a>, bottom right panel.</p></li>
+<li><p>The Teager-Kaiser energy operator (TKEO) transformation of EMG signal (Li et al., 2007 <a class="reference internal" href="#lizh07" id="id3"><span>[LiZh07]</span></a>), shown on bottom left panel of <a class="reference internal" href="#figure1"><span class="std std-ref">Figure 1</span></a>, is particularly efficient to amplify EMG burst signal and improve signal-to-noise ratio in the presence of continuous EMG activity, but often erases small EMG bursts (e.g., partial errors). This method does not itself determine activity onset and offset, but can be applied before threshold or integrated profile methods (Solnik et al., 2010 <a class="reference internal" href="#srsd10" id="id4"><span>[SRSD10]</span></a>; Tenan et al., 2017 <a class="reference internal" href="#teth17" id="id5"><span>[TeTH17]</span></a>).</p></li>
+</ul>
+<figure class="align-default" id="id11">
+<span id="figure1"></span><img alt="_images/figure1.svg" src="_images/figure1.svg" /><figcaption>
+<p><span class="caption-text">Raw EMG signal (top left) on which three methods of automatic detection are applied: Threshold method (top right), applied on rectified EMG signal ;
+Teager-Kaiser operator transformation (bottom left) ; and integrated profile method (bottom right).</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>For optimal automatic detection, we therefore recommend a two-steps approach consisting in:</p>
+<ol class="arabic simple">
+<li><p>Individualize the different EMG bursts periods using a threshold method applied on both raw and Teager-Kaiser transformed EMG,</p></li>
+<li><p>Determine the onset and offset of each burst using the integrated profile method.</p></li>
+</ol>
+<p>Myonset functions <cite>get_onsets</cite> and <cite>get_onsets_dbl_th</cite> implement such two-steps methods. The two functions differ in the threshold method used for the first step of burst individualisation,
+the former using a single threshold while the latter uses a double threshold method.
+Below, we present the Teager-Kaiser EMG transformation, then describe in details the two threshold detection methods to use on both raw and Teager-Kaiser EMG.
+Finally, we present the final step of onset and offset detection based on the integrated profile method. Reader in a hurry may skip the detailed description and go straight
+to the <a class="reference internal" href="#recommended-methods-combination"><span class="std std-ref">recommended methods combination</span></a> section.</p>
+</section>
+<section id="detailed-methods">
+<h2>2. Detailed methods<a class="headerlink" href="#detailed-methods" title="Permalink to this headline">¶</a></h2>
+<section id="teager-kaiser-transformation">
+<h3>2.1.  Teager-Kaiser transformation<a class="headerlink" href="#teager-kaiser-transformation" title="Permalink to this headline">¶</a></h3>
+<p>Teager-Kaiser EMG signal conditioning is defined as:</p>
+<div class="math notranslate nohighlight">
+\[\psi[x(n)] = x^2(n) - x(n+1)x(n-1)\]</div>
+<p><a class="reference internal" href="#figure1"><span class="std std-ref">Figure 1</span></a> shows an example of Teager-Kaiser EMG transformation. As stated above, this method does not detect EMG activity onset and offset but can be applied to
+improve signal-to-noise ratio before detection (e.g., using a threshold method). Comparing raw EMG signal (<a class="reference internal" href="#figure1"><span class="std std-ref">Figure 1</span></a>, top left) to Teager-Kaiser EMG (bottom left)
+shows how active EMG signal is amplified over non-active periods. However, even though such transformation can be profitable to reduce EMG noise, it will also erase small EMG
+activities potentially informative (e.g., partial errors). This is visible for instance on <a class="reference internal" href="#figure1"><span class="std std-ref">Figure 1</span></a> where small bursts occurring around 0.8-1s are no longer
+visible on Teager-Kaiser signal. In standard conditions, we therefore recommend using detection methods on both raw and Teager-Kaiser signals.</p>
+<p>Below is some example code to apply Teager-Kaiser transformation in Myonset, with data a 1D array containing continuous EMG signal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">myonset</span> <span class="k">as</span> <span class="nn">myo</span>
+<span class="n">tk_emg</span> <span class="o">=</span> <span class="n">myo</span><span class="o">.</span><span class="n">tkeo</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="theshold-detection-methods">
+<span id="threshold-detection-methods"></span><h3>2.2. Theshold detection methods<a class="headerlink" href="#theshold-detection-methods" title="Permalink to this headline">¶</a></h3>
+<p>As said above, those methods detect the presence of EMG activity as soon as signal amplitude exceeds a threshold value determined by the mean and variance of baseline EMG signal
+(see for instance Hodges and Bui, 1996 <a class="reference internal" href="#hobu96" id="id6"><span>[HoBu96]</span></a>). In the case of double threshold method, EMG activity is detected if a minimum number of data points during a given time
+window exceeds the threshold value (see Bonato et al., 1998 <a class="reference internal" href="#bodk98" id="id7"><span>[BoDK98]</span></a>). We first describe the function <code class="docutils literal notranslate"><span class="pre">detector_var</span></code>, based on a customized single threshold method,
+and then <code class="docutils literal notranslate"><span class="pre">detector_dbl_th</span></code> that uses double threshold detection.</p>
+<p id="function-detector-var">2.2.1. Function detector_var</p>
+<p>This function detects active EMG time periods on continuous EMG signal, it can be used on raw or Teager-Kaiser transformed EMG.
+For example, with data_trial a 1D array containing single trial EMG signal and times the corresponding time latencies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">active_periods</span> <span class="o">=</span> <span class="n">myo</span><span class="o">.</span><span class="n">detector_var</span><span class="p">(</span><span class="n">data_trial</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">sf</span><span class="o">=</span><span class="n">sf</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>First, the intervals during which rectified EMG amplitude exceeds <code class="docutils literal notranslate"><span class="pre">mbsl</span> <span class="pre">+</span> <span class="pre">(th</span> <span class="pre">*</span> <span class="pre">stbsl)</span></code> are detected, with <code class="docutils literal notranslate"><span class="pre">mbsl</span></code> the mean and <code class="docutils literal notranslate"><span class="pre">stbsl</span></code> the variance of rectified EMG signal,
+and <code class="docutils literal notranslate"><span class="pre">th</span></code> the specified <strong>threshold</strong> parameter (set to 3.5 by default). <a class="reference internal" href="#figure2"><span class="std std-ref">Figure 2</span></a> (upper row) shows the detected active periods when <code class="docutils literal notranslate"><span class="pre">th</span></code> value is set to
+3, 6, or 9. Either global or local EMG mean and variance can be used. If not specified, <code class="docutils literal notranslate"><span class="pre">mbsl</span></code> and <code class="docutils literal notranslate"><span class="pre">stbsl</span></code> are computed on data_trial as the mean and variance of
+rectified signal between first and time 0 samples. To use other values such as global <code class="docutils literal notranslate"><span class="pre">mbsl</span></code> and <code class="docutils literal notranslate"><span class="pre">stbsl</span></code>, specify <code class="docutils literal notranslate"><span class="pre">mbsl</span></code> and <code class="docutils literal notranslate"><span class="pre">stbsl</span></code> when the function is called:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">active_periods</span> <span class="o">=</span> <span class="n">myo</span><span class="o">.</span><span class="n">detector_var</span><span class="p">(</span><span class="n">data_trial</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">sf</span><span class="o">=</span><span class="n">sf</span><span class="p">,</span> <span class="n">mbsl</span><span class="o">=</span><span class="n">global_mean</span><span class="p">,</span> <span class="n">stbsl</span><span class="o">=</span><span class="n">global_variance</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Due to the oscillatory nature of EMG signal, signal amplitude falls below threshold also during active EMG periods.
+To determine the whole time period of muscle activity, consecutive intervals closed in time are merged. The time delay under which intervals are merged is defined by
+<code class="docutils literal notranslate"><span class="pre">time_limit</span></code> whose default value is set to 0.025s (<a class="reference internal" href="#figure2"><span class="std std-ref">Figure 2</span></a>, middle row shows the effect of varying the value of <code class="docutils literal notranslate"><span class="pre">time_limit</span></code>).
+Finally, in order to reduce the probability that noisy EMG results in false detection of active EMG period, intervals containing only a few data points above threshold are excluded.
+The minimum number of samples is set by <code class="docutils literal notranslate"><span class="pre">min_samples</span></code> parameter, default value is 3. The <code class="docutils literal notranslate"><span class="pre">varying_min</span></code> parameter allows to automatically increase the minimum number of samples
+required in noisy trials. First, the frequency of <em>small</em> EMG bursts in data_trial is computed (small burst is defined as an active period containing less than twice
+the minimum number of samples required). The <code class="docutils literal notranslate"><span class="pre">min_samples</span></code> parameter is then increased by the frequency of small bursts multiplied by the <code class="docutils literal notranslate"><span class="pre">varying_min</span></code> parameter
+(i.e., the higher the <code class="docutils literal notranslate"><span class="pre">varying_min</span></code>, the more <code class="docutils literal notranslate"><span class="pre">min_samples</span></code> increases in noisy trials). Default <code class="docutils literal notranslate"><span class="pre">varying_min</span></code> is 1, set to 0 to avoid adjustment of <code class="docutils literal notranslate"><span class="pre">min_samples</span></code>.
+The effect of using <code class="docutils literal notranslate"><span class="pre">varying_min</span></code> is illustrated in <a class="reference internal" href="#figure2"><span class="std std-ref">Figure 2</span></a> (lower row).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">active_periods</span> <span class="o">=</span> <span class="n">myo</span><span class="o">.</span><span class="n">detector_var</span><span class="p">(</span><span class="n">data_trial</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">sf</span><span class="o">=</span><span class="n">sf</span><span class="p">,</span>
+                                  <span class="n">time_limit</span><span class="o">=</span><span class="mf">.025</span><span class="p">,</span> <span class="n">min_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">varying_min</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id12">
+<span id="figure2"></span><img alt="_images/figure2.svg" src="_images/figure2.svg" /><figcaption>
+<p><span class="caption-text">Function <code class="docutils literal notranslate"><span class="pre">detector_var</span></code>, effects of varying threshold value (<code class="docutils literal notranslate"><span class="pre">th</span></code>, upper row), the minimum time period separating consecutive bursts (<code class="docutils literal notranslate"><span class="pre">time_limit</span></code>, middle row),
+and allowing variation of the minimal number of data samples above threshold to define an active EMG period (<code class="docutils literal notranslate"><span class="pre">varying_min</span></code>, lower row).</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p id="function-detector-dbl-th">2.2.2. Function detector_dbl_th</p>
+<p>This function detects the presence of EMG activity when a minimum number of data points exceeds the threshold value in a given time window.
+The threshold is also defined by <code class="docutils literal notranslate"><span class="pre">mbsl</span> <span class="pre">+</span> <span class="pre">(th</span> <span class="pre">*</span> <span class="pre">stbsl)</span></code>, with <code class="docutils literal notranslate"><span class="pre">mbsl</span></code> the mean and <code class="docutils literal notranslate"><span class="pre">stbsl</span></code> the variance of rectified EMG signal, and <code class="docutils literal notranslate"><span class="pre">th</span></code> the threshold parameter.
+In this case however, EMG activity is detected if a sufficient number of ahead data points exceeds the threshold value.
+The number of considered ahead data points is set by the <code class="docutils literal notranslate"><span class="pre">window_size</span></code> parameter, whose default value is 0.020s (i.e., 40 ahead points for 2048Hz sampling frequency).
+The required amount of data points above threshold depends of the <code class="docutils literal notranslate"><span class="pre">min_above_threshold</span></code> parameter, set to 0.5 by default, meaning that at least half of the data points
+must exceed threshold amplitude. Once active EMG periods have been individualized, periods with less than the minimum required number of samples above threshold are discarded
+(although it happens less frequently than with single threshold method, some transient EMG noise can still result in false detection of active EMG with double threshold detection).
+By default, <code class="docutils literal notranslate"><span class="pre">min_samples</span></code> is set to 3.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">active_periods</span> <span class="o">=</span> <span class="n">myo</span><span class="o">.</span><span class="n">detector_dbl_th</span><span class="p">(</span><span class="n">data_trial</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sf</span><span class="o">=</span><span class="n">sf</span><span class="p">,</span>
+                                     <span class="n">window_size</span><span class="o">=</span><span class="mf">.020</span><span class="p">,</span> <span class="n">min_above_threshold</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">min_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#figure3"><span class="std std-ref">Figure 3</span></a> (left panel) shows detected active periods for default <code class="docutils literal notranslate"><span class="pre">window_size</span></code> and <code class="docutils literal notranslate"><span class="pre">min_above_threshold</span></code> values. As shown on middle and right panels,
+decreasing parameters values increase detection sensitivity, with a different effect depending on which parameter varies.</p>
+<figure class="align-default" id="id13">
+<span id="figure3"></span><img alt="_images/figure3.svg" src="_images/figure3.svg" /><figcaption>
+<p><span class="caption-text">Function <code class="docutils literal notranslate"><span class="pre">detector_dbl_th</span></code>, and the effect of varying <code class="docutils literal notranslate"><span class="pre">window_size</span></code> (middle panel) and <code class="docutils literal notranslate"><span class="pre">min_above_threshold</span></code> (right panel).</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="determination-of-onset-and-offset-with-integrated-profile">
+<h3>2.3. Determination of onset and offset with integrated profile<a class="headerlink" href="#determination-of-onset-and-offset-with-integrated-profile" title="Permalink to this headline">¶</a></h3>
+<p>Utilization of integrated profile to determine EMG activity onset and offset was proposed by Santello and McDonagh (1998 <a class="reference internal" href="#samc98" id="id8"><span>[SaMc98]</span></a>; see also Liu and Liu, 2016 <a class="reference internal" href="#lili16" id="id9"><span>[LiLi16]</span></a>).
+In this method, EMG onset and offset correspond to the minimum and maximum of EMG signal integrated profile, defined as the difference between the empirical cumulative sum signal
+and its uniform equivalent (i.e., straight-line). The method is illustrated in <a class="reference internal" href="#figure4"><span class="std std-ref">Figure 4</span></a>.
+As can be seen, integrated profile provides a straightforward method to accurately determine activity onset and offset.
+The major drawback of this method is that only one onset and one offset can be determined for a given signal, as, by definition, only one minimum and one maximum exist.</p>
+<figure class="align-default" id="id14">
+<span id="figure4"></span><img alt="_images/figure4.svg" src="_images/figure4.svg" /><figcaption>
+<p><span class="caption-text">Left panel: raw EMG signal (background grey signal), and corresponding cumulative sum of rectified signal (dark grey), as well as its uniform equivalent
+(i.e., monotically increasing function, grey straight line) ; Right panel : integrated profile (dark grey) , resulting from the difference between cumulative sum and
+monotically increasing function. The minimum and maximum values of integrated profile (vertical dotted lines) define raw EMG onset and offset.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="recommended-methods-combination">
+<span id="id10"></span><h2>3. Recommended methods combination<a class="headerlink" href="#recommended-methods-combination" title="Permalink to this headline">¶</a></h2>
+<p>For optimal automatic detection of EMG activity onset and offset, we recommend to first individualize EMG burst periods using a threshold method, and second determine
+each EMG onset and offset with integrated profile method.
+<a class="reference internal" href="#figure5"><span class="std std-ref">Figure 5</span></a> shows the whole pipeline for such procedure, which has been implemented in Myonset functions <code class="docutils literal notranslate"><span class="pre">get_onsets</span></code> and <code class="docutils literal notranslate"><span class="pre">get_onsets_dbl_th</span></code>
+(the difference being the threshold method used for first step). In more details, each function consists in:</p>
+<ol class="arabic simple">
+<li><p>Detect and individualize EMG burst(s) using <code class="docutils literal notranslate"><span class="pre">detector_var</span></code> (<code class="docutils literal notranslate"><span class="pre">get_onsets</span></code>) or <code class="docutils literal notranslate"><span class="pre">detector_dbl_th</span></code> (<code class="docutils literal notranslate"><span class="pre">get_onsets_dbl_th</span></code>). See <a class="reference internal" href="#threshold-detection-methods"><span class="std std-ref">Threshold detection methods</span></a> above for more details.</p></li>
+<li><p>Based on 1., split continuous EMG into active and baseline periods (<code class="docutils literal notranslate"><span class="pre">signal_windows</span></code> function). The initial baseline period is defined from first sample to mean latency between time 0 and first EMG burst, the final baseline period is defined from mean latency between end of last EMG burst and last sample. In between, bounds of active periods are located halfway between consecutive bursts. If EMG activity was detected before time 0 in step 1., first bound is placed halfway between first sample and start of first burst.</p></li>
+<li><p>For each active EMG period, determine EMG onset and offset using integrated profile. Because this method necessitates both baseline and active EMG signal, detection is performed on a rebuilt signal made of the active period surrounded by the initial and final baseline periods. For best detection even on very small EMG bursts, integrated profile is smoothed by moving average (default size window 0.015s), and minimum and maximum values are detected on a restrained time window around the active EMG period defined in 1. (by default up to -.050s to +.050s around active EMG).</p></li>
+<li><p>Burst(s) onset and offset are returned in a numpy array, with onsets samples in first column and offset samples in second column.</p></li>
+</ol>
+<figure class="align-default" id="id15">
+<span id="figure5"></span><img alt="_images/figure5.svg" src="_images/figure5.svg" /><figcaption>
+<p><span class="caption-text">Pipeline of <code class="docutils literal notranslate"><span class="pre">get_onsets</span></code> and <code class="docutils literal notranslate"><span class="pre">get_onsets_dbl_th</span></code> functions: 1. detection of active EMG periods based on <code class="docutils literal notranslate"><span class="pre">detector_var</span></code> or <code class="docutils literal notranslate"><span class="pre">detector_dbl_th</span></code>, 2. split whole signal into
+active and baseline EMG time windows using <code class="docutils literal notranslate"><span class="pre">signal_windows</span></code> function, 3. burst onset and offset in each active EMG period are detected using integrated profile method,
+and 4. onset and offset are determined as the earliest between integrated profile onset/offset and detector variance method.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<section id="utilization-of-get-onsets-function">
+<span id="get-onsets"></span><h3>3.1. Utilization of <code class="docutils literal notranslate"><span class="pre">get_onsets</span></code> function<a class="headerlink" href="#utilization-of-get-onsets-function" title="Permalink to this headline">¶</a></h3>
+<p>For the <code class="docutils literal notranslate"><span class="pre">get_onsets</span></code> function, the first step of detection of active EMG windows is based on <code class="docutils literal notranslate"><span class="pre">detector_var</span></code> function, which uses a custom single threshold method described
+<a class="reference internal" href="#function-detector-var"><span class="std std-ref">above</span></a>.
+This first step can be applied either on raw EMG, on Teager-Kaiser EMG, or on both (active EMG is detected if either raw or Teager-Kaiser signal exceeds the threshold).
+Parameters of <code class="docutils literal notranslate"><span class="pre">detector_var</span></code> must be set separately for raw EMG and Teager-Kaiser EMG.
+Below is some example code to call the <code class="docutils literal notranslate"><span class="pre">get_onsets</span></code> function, and a <a class="reference internal" href="#table1"><span class="std std-ref">table</span></a> presenting all possible optional parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">onsets</span><span class="p">,</span><span class="n">offsets</span> <span class="o">=</span> <span class="n">myo</span><span class="o">.</span><span class="n">get_onsets</span><span class="p">(</span><span class="n">data_trial</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">sf</span><span class="o">=</span><span class="n">sf</span><span class="p">,</span>
+                                <span class="n">use_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">th_raw</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">varying_min_raw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">use_tkeo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">th_tkeo</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">varying_min_tkeo</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-default" id="id16">
+<caption><span class="caption-text">Table <code class="docutils literal notranslate"><span class="pre">get_onsets</span></code> optional parameters</span><a class="headerlink" href="#id16" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 37%" />
+<col style="width: 16%" />
+<col style="width: 12%" />
+<col style="width: 19%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><dl class="simple">
+<dt>Recommended</dt><dd><p>value</p>
+</dd>
+</dl>
+</th>
+<th class="head"><p>Default
+value</p></th>
+<th class="head"><dl class="simple">
+<dt>General effect /</dt><dd><p>Comment</p>
+</dd>
+</dl>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>use_raw</p></td>
+<td><p>If True, apply <code class="docutils literal notranslate"><span class="pre">detector_var</span></code> on
+raw EMG</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>Sensitive to small
+EMG bursts</p></td>
+</tr>
+<tr class="row-odd"><td><p>th_raw</p></td>
+<td><p>Treshold value for raw EMG</p></td>
+<td><p>3 to 7</p></td>
+<td><p>3.5</p></td>
+<td><p>Increase to make
+detection less
+sensitive</p></td>
+</tr>
+<tr class="row-even"><td><p>time_limit_raw</p></td>
+<td><p>Time delay (in s) under which
+consecutive active raw EMG intervals
+are merged</p></td>
+<td><p>.015 to .035</p></td>
+<td><p>.025</p></td>
+<td><p>Decrease to
+individualize EMG
+bursts close in time</p></td>
+</tr>
+<tr class="row-odd"><td><p>min_samples_raw</p></td>
+<td><p>Required minimum number of samples
+above threshold</p></td>
+<td><p>1 to 5</p></td>
+<td><p>3</p></td>
+<td><p>Increase to reduce
+detection of small
+EMG bursts</p></td>
+</tr>
+<tr class="row-even"><td><p>varying_min_raw</p></td>
+<td><p>The amount by which min_samples is
+increased if small EMG bursts are
+present (active raw EMG periods with
+less than <code class="docutils literal notranslate"><span class="pre">min_samples</span></code> x2 data
+points above threshold)</p></td>
+<td><p>0 (no variation)
+to 3</p></td>
+<td><p>1</p></td>
+<td><p>Increase to reduce
+detection of small
+EMG burst in noisy
+trials</p></td>
+</tr>
+<tr class="row-odd"><td><p>mbsl_raw</p></td>
+<td><p>Mean of rectified raw EMG signal</p></td>
+<td><p>Global or trial's
+baseline mean</p></td>
+<td><p>Trial's
+baseline
+mean</p></td>
+<td><p>Use trial's mean
+adapts threshold to
+current background</p></td>
+</tr>
+<tr class="row-even"><td><p>stbsl_raw</p></td>
+<td><p>Variance of rectified raw EMG signal</p></td>
+<td><p>Global or trial's
+baseline variance</p></td>
+<td><p>Trial's
+baseline
+variance</p></td>
+<td><p>Use trial's variance
+adapts threshold to
+current background</p></td>
+</tr>
+<tr class="row-odd"><td><p>use_tkeo</p></td>
+<td><p>If True, apply <code class="docutils literal notranslate"><span class="pre">detector_var</span></code> on
+Teager-Kaiser EMG</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>Less sensitive to
+noisy EMG</p></td>
+</tr>
+<tr class="row-even"><td><p>th_tkeo</p></td>
+<td><p>Treshold value for Teager-Kaiser EMG</p></td>
+<td><p>8 to 12</p></td>
+<td><p>8</p></td>
+<td><p>Increase to make
+detection less
+sensitive</p></td>
+</tr>
+<tr class="row-odd"><td><p>time_limit_tkeo</p></td>
+<td><p>Time delay (in s) under which
+consecutive active Teager-Kaiser EMG
+intervals are merged</p></td>
+<td><p>.015 to .035</p></td>
+<td><p>.025</p></td>
+<td><p>Decrease to
+individualize EMG
+bursts close in time</p></td>
+</tr>
+<tr class="row-even"><td><p>min_samples_tkeo</p></td>
+<td><p>Required minimum number of samples
+above threshold</p></td>
+<td><p>3 to 15</p></td>
+<td><p>10</p></td>
+<td><p>Increase to reduce
+detection of small
+EMG bursts</p></td>
+</tr>
+<tr class="row-odd"><td><p>varying_min_tkeo</p></td>
+<td><p>The amount by which min_samples is
+increased if small EMG bursts are
+present (active Teager-Kaiser EMG
+periods with less than
+<code class="docutils literal notranslate"><span class="pre">min_samples</span></code> x2 data points above
+threshold)</p></td>
+<td><p>0 (no variation)
+to 3</p></td>
+<td><p>0</p></td>
+<td><p>Teager-Kaiser
+transformation
+usually already
+erases small EMG
+bursts</p></td>
+</tr>
+<tr class="row-even"><td><p>mbsl_tkeo</p></td>
+<td><p>Mean of rectified Teager-Kaiser EMG
+signal</p></td>
+<td><p>Global or trial's
+baseline mean</p></td>
+<td><p>Trial's
+baseline
+mean</p></td>
+<td><p>Use trial's mean
+adapts threshold to
+current background</p></td>
+</tr>
+<tr class="row-odd"><td><p>stbsl_tkeo</p></td>
+<td><p>Variance of rectified Teager-Kaiser
+EMG signal</p></td>
+<td><p>Global or trial's
+baseline variance</p></td>
+<td><p>Trial's
+baseline
+variance</p></td>
+<td><p>Use trial's variance
+adapts threshold to
+current background</p></td>
+</tr>
+<tr class="row-even"><td><p>sf</p></td>
+<td><p>EMG signal sampling frequency</p></td>
+<td></td>
+<td><p>None</p></td>
+<td><p>If not provided, an
+error occurs</p></td>
+</tr>
+<tr class="row-odd"><td><p>ip_search</p></td>
+<td><p>Maximum time window (in s) to search
+onset and offset around active EMG
+period</p></td>
+<td><p>[-.025,.025] to
+[-.075,.075]</p></td>
+<td><p>[-.050,.050]</p></td>
+<td><p>Affect mainly
+small EMG bursts</p></td>
+</tr>
+<tr class="row-even"><td><p>moving_avg_window</p></td>
+<td><p>Window width (in s) for moving
+average of the integrated profile</p></td>
+<td><p>1/sf (no
+smoothing) to
+.050</p></td>
+<td><p>.015</p></td>
+<td><p>Again, affect mainly
+small EMG bursts</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="utilization-of-get-onsets-dbl-th-function">
+<h3>3.2. Utilization of <code class="docutils literal notranslate"><span class="pre">get_onsets_dbl_th</span></code> function<a class="headerlink" href="#utilization-of-get-onsets-dbl-th-function" title="Permalink to this headline">¶</a></h3>
+<p>For the <code class="docutils literal notranslate"><span class="pre">get_onsets_dbl_th</span></code> function, the first step of detection of active EMG windows is based on <code class="docutils literal notranslate"><span class="pre">detector_dbl_th</span></code> function, which uses a double threshold method
+described <a class="reference internal" href="#function-detector-dbl-th"><span class="std std-ref">above</span></a>. Again, the first detection step can be applied either on raw EMG, on Teager-Kaiser EMG, or on both
+(active EMG is detected if either raw or Teager-Kaiser signal exceeds the double threshold). Parameters of <code class="docutils literal notranslate"><span class="pre">detector_dbl_th</span></code> must be set separately for raw EMG and
+Teager-Kaiser EMG. Below is some example code to call the <code class="docutils literal notranslate"><span class="pre">get_onsets_dbl_th</span></code> function, and a table presenting all possible optional parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">onsets</span><span class="p">,</span><span class="n">offsets</span> <span class="o">=</span> <span class="n">myo</span><span class="o">.</span><span class="n">get_onsets_dbl_th</span><span class="p">(</span><span class="n">data_trial</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">sf</span><span class="o">=</span><span class="n">sf</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mf">.020</span><span class="p">,</span> <span class="n">min_above_threshold</span><span class="o">=</span><span class="mf">.5</span>
+                                       <span class="n">use_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">th_raw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                                       <span class="n">use_tkeo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">th_tkeo</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+<span id="table2"></span><table class="docutils align-default" id="id17">
+<caption><span class="caption-text">Table <code class="docutils literal notranslate"><span class="pre">get_onsets_dbl_th</span></code> optional parameters</span><a class="headerlink" href="#id17" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 36%" />
+<col style="width: 16%" />
+<col style="width: 11%" />
+<col style="width: 19%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><dl class="simple">
+<dt>Recommended</dt><dd><p>value</p>
+</dd>
+</dl>
+</th>
+<th class="head"><p>Default
+value</p></th>
+<th class="head"><dl class="simple">
+<dt>General effect /</dt><dd><p>Comment</p>
+</dd>
+</dl>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>window_size</p></td>
+<td><p>Size of the ahead window (in s) in
+which data points above threshold
+are detected</p></td>
+<td><p>.005 to .030</p></td>
+<td><p>.020</p></td>
+<td><p>Decrease to
+individualize EMG
+bursts close in time</p></td>
+</tr>
+<tr class="row-odd"><td><p>min_above_threshold</p></td>
+<td><p>Minimum amount of data points above
+threshold in determined window to
+detect active EMG</p></td>
+<td><p>.35 to .65</p></td>
+<td><p>.5</p></td>
+<td><p>Decrease to be
+more sensitive to
+short EMG bursts</p></td>
+</tr>
+<tr class="row-even"><td><p>use_raw</p></td>
+<td><p>If True, apply <code class="docutils literal notranslate"><span class="pre">detector_dbl_th</span></code>
+on raw EMG</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>Sensitive to small
+EMG bursts</p></td>
+</tr>
+<tr class="row-odd"><td><p>th_raw</p></td>
+<td><p>Treshold value for raw EMG</p></td>
+<td><p>2 to 6</p></td>
+<td><p>3</p></td>
+<td><p>Increase to make
+detection less
+sensitive</p></td>
+</tr>
+<tr class="row-even"><td><p>mbsl_raw</p></td>
+<td><p>Mean of rectified raw EMG signal</p></td>
+<td><p>Global or trial's
+baseline mean</p></td>
+<td><p>Trial's
+baseline
+mean</p></td>
+<td><p>Use trial's mean
+adapts threshold to
+current background</p></td>
+</tr>
+<tr class="row-odd"><td><p>stbsl_raw</p></td>
+<td><p>Variance of rectified raw EMG signal</p></td>
+<td><p>Global or trial's
+baseline variance</p></td>
+<td><p>Trial's
+baseline
+variance</p></td>
+<td><p>Use trial's variance
+adapts threshold to
+current background</p></td>
+</tr>
+<tr class="row-even"><td><p>use_tkeo</p></td>
+<td><p>If True, apply <code class="docutils literal notranslate"><span class="pre">detector_dbl_th</span></code>
+on Teager-Kaiser EMG</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>Less sensitive to
+noisy EMG</p></td>
+</tr>
+<tr class="row-odd"><td><p>th_tkeo</p></td>
+<td><p>Treshold value for Teager-Kaiser EMG</p></td>
+<td><p>8 to 12</p></td>
+<td><p>8</p></td>
+<td><p>Increase to make
+detection less
+sensitive</p></td>
+</tr>
+<tr class="row-even"><td><p>mbsl_tkeo</p></td>
+<td><p>Mean of rectified Teager-Kaiser EMG
+signal</p></td>
+<td><p>Global or trial's
+baseline mean</p></td>
+<td><p>Trial's
+baseline
+mean</p></td>
+<td><p>Use trial's mean
+adapts threshold to
+current background</p></td>
+</tr>
+<tr class="row-odd"><td><p>stbsl_tkeo</p></td>
+<td><p>Variance of rectified Teager-Kaiser
+EMG signal</p></td>
+<td><p>Global or trial's
+baseline variance</p></td>
+<td><p>Trial's
+baseline
+variance</p></td>
+<td><p>Use trial's variance
+adapts threshold to
+current background</p></td>
+</tr>
+<tr class="row-even"><td><p>min_samples</p></td>
+<td><p>Required minimal number of samples
+above threshold (for both raw and
+Teager-Kaiser EMG)</p></td>
+<td><p>1 to 5</p></td>
+<td><p>3</p></td>
+<td><p>Increase to reduce
+detection of small
+EMG bursts</p></td>
+</tr>
+<tr class="row-odd"><td><p>sf</p></td>
+<td><p>EMG signal sampling frequency</p></td>
+<td></td>
+<td><p>None</p></td>
+<td><p>If not provided, an
+error occurs</p></td>
+</tr>
+<tr class="row-even"><td><p>ip_search</p></td>
+<td><p>Maximum time window (in s) to search
+onset and offset around active EMG
+period</p></td>
+<td><p>[-.025,.025] to
+[-.075,.075]</p></td>
+<td><p>[-.050,.050]</p></td>
+<td><p>Affect mainly
+small EMG bursts</p></td>
+</tr>
+<tr class="row-odd"><td><p>moving_avg_window</p></td>
+<td><p>Window width (in s) for moving
+average of the integrated profile</p></td>
+<td><p>1/sf (no
+smoothing) to
+.050</p></td>
+<td><p>.015</p></td>
+<td><p>Again, affect mainly
+small EMG bursts</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="bodk98"><span class="brackets"><a class="fn-backref" href="#id7">BoDK98</a></span></dt>
+<dd><p>Bonato P, D’Alessio T, Knaflitz M, (1998) A statistical method for the measurementof muscle activation intervals from surface myoelectric signal during gait, IEEETrans Biomed Eng 45:287–299.</p>
+</dd>
+<dt class="label" id="hobu96"><span class="brackets">HoBu96</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id6">2</a>)</span></dt>
+<dd><p>Hodges PW, Bui BH (1996) A comparison of computer-based methods for thedetermination of onset of muscle contraction using electromyography, Electromyogr Mot C 101:511–519.</p>
+</dd>
+<dt class="label" id="lizh07"><span class="brackets"><a class="fn-backref" href="#id3">LiZh07</a></span></dt>
+<dd><p>Li X, Zhou P, Aruin AS (2007) Teager–Kaiser energy operation of surface EMG improves muscle activity onset detection. Ann Biomed Eng 35:1532–1538.</p>
+</dd>
+<dt class="label" id="lili16"><span class="brackets"><a class="fn-backref" href="#id9">LiLi16</a></span></dt>
+<dd><p>Liu J, Liu Q (2016) Use of the integrated profile for voluntary muscle activity detection using EMG signals with spurious background spikes: A study with incomplete spinal cord injury. Biomed Signal Process Control 24:19-24.</p>
+</dd>
+<dt class="label" id="srsd10"><span class="brackets"><a class="fn-backref" href="#id4">SRSD10</a></span></dt>
+<dd><p>Solnik S, Rider P, Steinweg K, DeVita P, Hortobágyi T (2010) Teager-Kaiser energy operator signal conditioning improves EMG onset detection. Eur J Appl Physiol. 110(3):489-98. doi: 10.1007/s00421-010-1521-8.</p>
+</dd>
+<dt class="label" id="teth17"><span class="brackets"><a class="fn-backref" href="#id5">TeTH17</a></span></dt>
+<dd><p>Tenan MS, Tweedell AJ, Haynes CA (2017) Analysis of statistical and standard algorithms for detecting muscle onset with surface electromyography. PLoS One. 12(5):e0177312. doi: 10.1371/journal.pone.0177312.</p>
+</dd>
+<dt class="label" id="samc98"><span class="brackets">SaMc98</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id8">2</a>)</span></dt>
+<dd><p>Santello M, McDonagh MJN (1998) The control of timing and amplitude of EMG activity in landing movements in humans. Exp Physiol 83:857-874.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Automatic detection of EMG busts</a><ul>
+<li><a class="reference internal" href="#methods-overview">1. Methods overview</a></li>
+<li><a class="reference internal" href="#detailed-methods">2. Detailed methods</a><ul>
+<li><a class="reference internal" href="#teager-kaiser-transformation">2.1.  Teager-Kaiser transformation</a></li>
+<li><a class="reference internal" href="#theshold-detection-methods">2.2. Theshold detection methods</a></li>
+<li><a class="reference internal" href="#determination-of-onset-and-offset-with-integrated-profile">2.3. Determination of onset and offset with integrated profile</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#recommended-methods-combination">3. Recommended methods combination</a><ul>
+<li><a class="reference internal" href="#utilization-of-get-onsets-function">3.1. Utilization of <code class="docutils literal notranslate"><span class="pre">get_onsets</span></code> function</a></li>
+<li><a class="reference internal" href="#utilization-of-get-onsets-dbl-th-function">3.2. Utilization of <code class="docutils literal notranslate"><span class="pre">get_onsets_dbl_th</span></code> function</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="quickstart.html"
+                          title="previous chapter">Myonset QuickStart</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="guide_events.html"
+                          title="next chapter">Events class and functions</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/guide_emgtools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="guide_events.html" title="Events class and functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="Myonset QuickStart"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Myonset 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Automatic detection of EMG busts</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Laure Spieser and Boris Burle.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,666 @@
+
+<!DOCTYPE html>
+
+<html lang="english">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Events class and functions &#8212; Myonset 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Onsets and offsets visualization and manual correction" href="guide_vizEMG.html" />
+    <link rel="prev" title="Automatic detection of EMG busts" href="guide_emgtools.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="guide_vizEMG.html" title="Onsets and offsets visualization and manual correction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="guide_emgtools.html" title="Automatic detection of EMG busts"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Myonset 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Events class and functions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="events-class-and-functions">
+<span id="guide-events"></span><h1>Events class and functions<a class="headerlink" href="#events-class-and-functions" title="Permalink to this headline">¶</a></h1>
+<p>What we call <em>event</em> here is a time marker, also called <em>trigger</em>, specifying the exact time positions of specific events like stimulus or response in (continuous) data recording such as EMG.
+Note that after performing the automatic detection of EMG onset(s) and offset(s), each burst onset and offset is stored in event markers, and saved in event files with the original event markers.
+We will here describe the available classes and functions implemented in Myonset to make it easier to store and handle events.
+Two container objects are available for events in Myonset:</p>
+<ul class="simple">
+<li><p>Events, intended to contain events of continuous data signal</p></li>
+<li><p>EpochEvents containing events from data signal segmented in trials (or <em>epochs</em>)</p></li>
+</ul>
+<section id="the-events-class">
+<span id="id1"></span><h2>1. The <code class="docutils literal notranslate"><span class="pre">Events</span></code> class<a class="headerlink" href="#the-events-class" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Events</span></code> is our basic container object for events. It is based on the rationale that a particular event marker is defined by three information:</p>
+<ol class="arabic simple">
+<li><p>the event latency</p></li>
+<li><p>the event code specifying the nature of the event (e.g., which stimulus, which response …)</p></li>
+<li><p>eventually the event channel (e.g., EMG onset and offset are associated to one EMG channel)</p></li>
+</ol>
+<p>In <code class="docutils literal notranslate"><span class="pre">Events</span></code>, each of that three information is stored in a separated array. For instance, the event code is stored in array <code class="docutils literal notranslate"><span class="pre">code</span></code> and the channel is stored in array <code class="docutils literal notranslate"><span class="pre">chan</span></code>.
+Each array contains information of all event markers, a particular event being stored at the same index in all arrays: the n<sup>th</sup> event code is stored at index n in array <code class="docutils literal notranslate"><span class="pre">code</span></code>,
+and the n<sup>th</sup> event channel is stored at index n in array <code class="docutils literal notranslate"><span class="pre">chan</span></code>.
+The same logic is used for event latencies, which are stored in an object called <code class="docutils literal notranslate"><span class="pre">lat</span></code> (standing for Latency). In <code class="docutils literal notranslate"><span class="pre">lat</span></code>, the array <code class="docutils literal notranslate"><span class="pre">time</span></code> contains event latencies in seconds
+and array <code class="docutils literal notranslate"><span class="pre">sample</span></code> contains latencies in data samples. We first describe how event latencies are stored, and then extend more on Events and EpochEvents objects.</p>
+<section id="events-latencies">
+<h3>1.1 Events latencies<a class="headerlink" href="#events-latencies" title="Permalink to this headline">¶</a></h3>
+<p>As stated above, the event markers latencies are stored in <code class="docutils literal notranslate"><span class="pre">lat</span></code>, in both time units and data samples.
+Although redundant, it is often useful to store latencies in those two system units.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">myonset</span> <span class="kn">import</span> <span class="n">Events</span>
+<span class="n">exp_evts</span> <span class="o">=</span> <span class="n">Events</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">code</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="n">sf</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">exp_evts</span><span class="o">.</span><span class="n">lat</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">6</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span>   <span class="mi">0</span> <span class="mi">1024</span> <span class="mi">2048</span> <span class="mi">3072</span> <span class="mi">4096</span> <span class="mi">5120</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Information contained in <code class="docutils literal notranslate"><span class="pre">lat</span></code> are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sf</span></code>: the sampling frequency of the events data signal, if sf is not provided, it will be asked explicitly</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sample</span></code>: numpy 1D array storing the events latency samples</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: numpy 1D array storing the events time latencies</p></li>
+</ul>
+<p>Either time, sample, or both can be given to create <code class="docutils literal notranslate"><span class="pre">lat</span></code>. If only one is given, the other is computed based on the sampling frequency.
+If both are given, it is not necessary that time and sample latencies match, but the two arrays must be of same length.</p>
+</section>
+<section id="class-events">
+<h3>1.2 Class <code class="docutils literal notranslate"><span class="pre">Events</span></code><a class="headerlink" href="#class-events" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Events</span></code> is the basic container object storing marker events. As said above, each event is defined by its latency, code and channel,
+stored respectively in Events.lat, Events.code and Events.chan:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">myonset</span> <span class="kn">import</span> <span class="n">Events</span>
+<span class="n">exp_evts</span> <span class="o">=</span> <span class="n">Events</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.623</span><span class="p">,</span><span class="mf">1.678</span><span class="p">,</span><span class="mf">3.5</span><span class="p">,</span><span class="mf">3.709</span><span class="p">,</span><span class="mf">3.785</span><span class="p">],</span> <span class="n">code</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="s1">&#39;onset&#39;</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="s1">&#39;onset&#39;</span><span class="p">,</span><span class="mi">32</span><span class="p">],</span>
+                  <span class="n">chan</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">sf</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">exp_evts</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">7</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">7</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1024</span> <span class="mi">1536</span> <span class="mi">1662</span> <span class="mi">1718</span> <span class="mi">3584</span> <span class="mi">3798</span> <span class="mi">3876</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span>    <span class="mf">1.5</span>   <span class="mf">1.623</span> <span class="mf">1.678</span> <span class="mf">3.5</span>   <span class="mf">3.709</span> <span class="mf">3.785</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;16&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;32&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">1</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Each event information is stored in <code class="docutils literal notranslate"><span class="pre">Events.lat.time</span></code>, <code class="docutils literal notranslate"><span class="pre">Events.lat.sample</span></code>, <code class="docutils literal notranslate"><span class="pre">Events.code</span></code>, <code class="docutils literal notranslate"><span class="pre">Events.chan</span></code>, at the same index across arrays:
+the code of the event occurring at time <code class="docutils literal notranslate"><span class="pre">Events.lat.time[n]</span></code> is given by <code class="docutils literal notranslate"><span class="pre">Events.code[n]</span></code>. In the above example, <code class="docutils literal notranslate"><span class="pre">exp_evts</span></code> contain 5 marker events:</p>
+<ul class="simple">
+<li><p>events of code <code class="docutils literal notranslate"><span class="pre">2</span></code>, then <code class="docutils literal notranslate"><span class="pre">4</span></code>, occurring respectively at 1 and 1.5 seconds (samples 1024 and 1536), for instance the occurrence of a fixation point followed by a stimulus. Note that they are associated with channel <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which is the channel number used in Myonset for event markers which are not associated to a particular channel</p></li>
+<li><p>event <code class="docutils literal notranslate"><span class="pre">onset</span></code>, at time 1.623s (sample 1662), specifying in this example the onset of EMG burst on channel <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p>event of code <code class="docutils literal notranslate"><span class="pre">16</span></code>, for instance a left-hand response, occurring at 1.678s</p></li>
+<li><p>event <code class="docutils literal notranslate"><span class="pre">4</span></code> again, i.e., a new stimulus appearing at 3.5s</p></li>
+<li><p>event <code class="docutils literal notranslate"><span class="pre">onset</span></code>, occurring at 3.709s, this time associated with channel <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
+<li><p>event <code class="docutils literal notranslate"><span class="pre">32</span></code>, for instance right response at time 3.785s</p></li>
+</ul>
+<p>The full list of methods available in <code class="docutils literal notranslate"><span class="pre">Events</span></code> is presented in <a class="reference internal" href="#table-events-methods"><span class="std std-ref">the table below</span></a>. We will here present briefly how to access and segment events.</p>
+<p>To access one or several events, use the method get_events with event indices as arguments:</p>
+<ul>
+<li><p>one event:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exp_evts</span><span class="o">.</span><span class="n">get_events</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">1</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">1</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1662</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.623</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;onset&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p>several events:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exp_evts</span><span class="o">.</span><span class="n">get_events</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">2</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">2</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1536</span> <span class="mi">1718</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.5</span>   <span class="mf">1.678</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;4&#39;</span> <span class="s1">&#39;16&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>To find and get all events with a particular code, or associated with a particular channel, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exp_evts</span><span class="o">.</span><span class="n">find_and_get_events</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">])</span>
+ <span class="o">&gt;</span> <span class="mi">3</span> <span class="n">event</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">selected</span><span class="o">.</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">3</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">3</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1024</span> <span class="mi">1536</span> <span class="mi">3584</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span>  <span class="mf">1.5</span> <span class="mf">3.5</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;4&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exp_evts</span><span class="o">.</span><span class="n">find_and_get_events</span><span class="p">(</span><span class="n">chan</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+ <span class="o">&gt;</span> <span class="mi">1</span> <span class="n">event</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">selected</span><span class="o">.</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">1</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">1</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1662</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.623</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;onset&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Note that, when specifying several values for one attribute (for instance here several codes), events whose attribute is equal to either value is selected.
+If several attributes are filled however, only events satisfying all requirements are selected:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exp_evts</span><span class="o">.</span><span class="n">find_and_get_events</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">],</span><span class="n">chan</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+ <span class="o">&gt;</span> <span class="n">Event</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">not</span> <span class="n">found</span><span class="p">,</span> <span class="n">nothing</span> <span class="n">was</span> <span class="n">selected</span><span class="o">.</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">0</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">0</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>To find events with either code <code class="docutils literal notranslate"><span class="pre">'2'</span></code> or <code class="docutils literal notranslate"><span class="pre">'4'</span></code> or channel <code class="docutils literal notranslate"><span class="pre">0</span></code>, the user can combine several searches using the find_events functions,
+that returns the index of the searched events:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exp_evts</span><span class="o">.</span><span class="n">find_events</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">])</span>
+ <span class="o">&gt;</span> <span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
+<span class="n">exp_evts</span><span class="o">.</span><span class="n">find_events</span><span class="p">(</span><span class="n">chan</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+ <span class="o">&gt;</span> <span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
+
+<span class="n">exp_evts</span><span class="o">.</span><span class="n">get_events</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">4</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">4</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1024</span> <span class="mi">1536</span> <span class="mi">3584</span> <span class="mi">1662</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span>  <span class="mf">1.5</span>  <span class="mf">3.5</span>  <span class="mf">1.623</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Finally, continuous events can be segmented using the method <code class="docutils literal notranslate"><span class="pre">segment</span></code>, returning an EpochEvents object presented below.
+For instance here, to segment on stimulus events:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epochs_evts</span> <span class="o">=</span> <span class="n">exp_evts</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">code_t0</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;4&#39;</span><span class="p">],</span> <span class="n">tmin</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">tmax</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="n">Found</span> <span class="mi">2</span> <span class="n">epoch</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epochs_evts</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">EpochEvents</span><span class="p">,</span> <span class="mi">2</span> <span class="n">trials</span><span class="p">,</span> <span class="mi">7</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-epochevents-class">
+<span id="id2"></span><h2>2. The <code class="docutils literal notranslate"><span class="pre">EpochEvents</span></code> class<a class="headerlink" href="#the-epochevents-class" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">EpochEvents</span></code> object is used to store segmented events or <em>epoch</em> events, i.e., events divided in fixed length segments, usually around reference event code(s),
+defined by <code class="docutils literal notranslate"><span class="pre">code_t0</span></code> parameter. In most cases, the <code class="docutils literal notranslate"><span class="pre">EpochEvents</span></code> is obtained after the segmentation of continuous events stored in an <code class="docutils literal notranslate"><span class="pre">Events</span></code> object.
+For instance, in the above example, events are segmented from -0.5 to 1s around each event <code class="docutils literal notranslate"><span class="pre">'4'</span></code>. Two events <code class="docutils literal notranslate"><span class="pre">‘4’</span></code> are present in exp_evts,
+resulting in an EpochEvents containing 2 trials (or 2 segments).</p>
+<p>EpochEvents contain:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">list_evts_trials</span></code>: list of <code class="docutils literal notranslate"><span class="pre">Events</span></code> objects storing the marker events of consecutive trials. Each element of <code class="docutils literal notranslate"><span class="pre">list_evts_trials</span></code> is an independent Events object. Note that time latencies are now given in reference to the trial’s <em>code_t0</em> event, while sample latencies are given in reference to trial’s first sample:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epochs_evts</span><span class="o">.</span><span class="n">list_evts_trials</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">4</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">4</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span>  <span class="mi">0</span> <span class="mi">512</span> <span class="mi">638</span> <span class="mi">694</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span>    <span class="mf">0.</span>     <span class="mf">0.123</span>  <span class="mf">0.178</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;16&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">epochs_evts</span><span class="o">.</span><span class="n">list_evts_trials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">3</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">3</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">512</span> <span class="mi">726</span> <span class="mi">804</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.</span>    <span class="mf">0.209</span> <span class="mf">0.285</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;32&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span>  <span class="mi">1</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p>tmin: <code class="docutils literal notranslate"><span class="pre">Latency</span></code> object storing the starting latency of each trial</p></li>
+<li><p>t0: <code class="docutils literal notranslate"><span class="pre">Latency</span></code> object storing the time 0 latency of each trial</p></li>
+<li><p>tmax: <code class="docutils literal notranslate"><span class="pre">Latency</span></code> object storing the ending latency of each trial</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epochs_evts</span><span class="o">.</span><span class="n">tmin</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">2</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1024</span> <span class="mi">3072</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span> <span class="mf">3.</span><span class="p">]</span>
+<span class="n">epochs_evts</span><span class="o">.</span><span class="n">t0</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">2</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1536</span> <span class="mi">3584</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.5</span> <span class="mf">3.5</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The full list of methods available in EpochEvents is presented in <a class="reference internal" href="#table-events-methods"><span class="std std-ref">the table below</span></a>.
+We here present only the method <code class="docutils literal notranslate"><span class="pre">as_continuous</span></code>, allowing to return to continuous events, from segmented events:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">continuous_evts</span><span class="p">,</span> <span class="n">trials</span> <span class="o">=</span> <span class="n">epochs_evts</span><span class="o">.</span><span class="n">as_continuous</span><span class="p">()</span>
+ <span class="o">&gt;</span> <span class="n">Checking</span> <span class="k">for</span> <span class="n">duplicates</span> <span class="ow">in</span> <span class="n">events</span><span class="o">...</span>
+ <span class="o">&gt;</span> <span class="mi">0</span> <span class="n">event</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">removed</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The method concatenates all trials’ <code class="docutils literal notranslate"><span class="pre">Events</span></code> (i.e., all elements of list_evts_trials) and recompute continuous events latencies based on <code class="docutils literal notranslate"><span class="pre">EpochEvents.tmin</span></code> latencies.
+A new <code class="docutils literal notranslate"><span class="pre">Events</span></code> object is returned, containing the continuous events (<code class="docutils literal notranslate"><span class="pre">continuous_evts</span></code>) as well as a numpy array containing the trial index of each event of the continuous events.
+In the example below, the <code class="docutils literal notranslate"><span class="pre">continuous_evts</span></code> is equal to <code class="docutils literal notranslate"><span class="pre">exp_evts</span></code> above, and trials array indicate that events 0 to 3 in <code class="docutils literal notranslate"><span class="pre">continuous_evts</span></code> belonged to trial 0,
+and events 4 to 6 belonged to trial 1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">continuous_evts</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">7</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">7</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1024</span> <span class="mi">1536</span> <span class="o">...</span> <span class="mi">3876</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span> <span class="mf">1.5</span> <span class="o">...</span> <span class="mf">3.785</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;16&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;32&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">1</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">trials</span>
+ <span class="o">&gt;</span> <span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>In some cases, for instance when trial length is long, some event markers can be duplicated.
+In the example below, increasing trial duration to 2s after stimulus results in the inclusion of stimulus event of trial 1 at the end of trial 0:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epochs_evts</span> <span class="o">=</span> <span class="n">exp_evts</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">code_t0</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;4&#39;</span><span class="p">],</span> <span class="n">tmin</span><span class="o">=-</span><span class="mf">.5</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+ <span class="o">&gt;</span> <span class="n">Found</span> <span class="mi">2</span> <span class="n">epoch</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span>
+<span class="n">epochs_evts</span><span class="o">.</span><span class="n">list_evts_trials</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">5</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">5</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span> <span class="mi">512</span> <span class="mi">638</span> <span class="mi">694</span> <span class="mi">2560</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span> <span class="mf">0.</span> <span class="mf">0.123</span> <span class="mf">0.178</span> <span class="mf">2.</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;16&#39;</span> <span class="s1">&#39;4&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In most cases, this has no consequence for the epoch events. When switching back to continuous events using <code class="docutils literal notranslate"><span class="pre">as_continuous</span></code> however, duplicated events must be dropped:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">continuous_evts</span><span class="p">,</span> <span class="n">trials</span> <span class="o">=</span> <span class="n">epochs_evts</span><span class="o">.</span><span class="n">as_continuous</span><span class="p">()</span>
+ <span class="o">&gt;</span> <span class="n">Checking</span> <span class="k">for</span> <span class="n">duplicates</span> <span class="ow">in</span> <span class="n">events</span><span class="o">...</span>
+ <span class="o">&gt;</span> <span class="mi">1</span> <span class="n">event</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">removed</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">as_continuous</span></code> keeps only the first occurrence of any duplicated event (i.e., marker events with same latency, code and channel),
+and the user is informed of the total number of duplicated events that have been deleted.
+Note that checking for duplicates across all events can take time, to deactivate this precaution and keep all events, set drop_duplic to False:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">continuous_evts</span><span class="p">,</span> <span class="n">trials</span> <span class="o">=</span> <span class="n">epochs_evts</span><span class="o">.</span><span class="n">as_continuous</span><span class="p">(</span><span class="n">drop_duplic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">continuous_evts</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">8</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">8</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1024</span> <span class="o">...</span> <span class="mi">1718</span> <span class="mi">3584</span> <span class="mi">3584</span> <span class="mi">3798</span> <span class="mi">3876</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span> <span class="o">...</span> <span class="mf">1.678</span> <span class="mf">3.5</span> <span class="mf">3.5</span> <span class="mf">3.709</span> <span class="mf">3.785</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;16&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;32&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">1</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>On the other hand, when epochs are short, some event markers can be lost in the <code class="docutils literal notranslate"><span class="pre">EpochEvents</span></code>. For instance, if epochs are defined from 0 to 0.150s around stimulus, several events
+will not be kept in the <code class="docutils literal notranslate"><span class="pre">EpochEvents</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">short_epochs</span> <span class="o">=</span> <span class="n">exp_evts</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">code_t0</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;4&#39;</span><span class="p">],</span> <span class="n">tmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">)</span>
+ <span class="o">&gt;</span> <span class="n">Found</span> <span class="mi">2</span> <span class="n">epochs</span>
+<span class="n">short_epochs</span><span class="o">.</span><span class="n">list_evts_trials</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">2</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">2</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span>  <span class="mi">0</span> <span class="mi">126</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.</span>    <span class="mf">0.123</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The events not kept in <code class="docutils literal notranslate"><span class="pre">EpochEvents</span></code> are then lost when switching back to continuous events:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">continuous_evts</span> <span class="o">=</span> <span class="n">short_epochs</span><span class="o">.</span><span class="n">as_continuous</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+ <span class="o">&gt;</span> <span class="n">Checking</span> <span class="k">for</span> <span class="n">duplicates</span> <span class="ow">in</span> <span class="n">events</span><span class="o">...</span>
+ <span class="o">&gt;</span> <span class="mi">0</span> <span class="n">event</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">removed</span><span class="o">.</span>
+<span class="n">continuous_evts</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">3</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">3</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1536</span> <span class="mi">1662</span> <span class="mi">3584</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.5</span>   <span class="mf">1.623</span> <span class="mf">3.5</span>  <span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;4&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>To avoid losing events, one good practice is to always combine original continuous events with the events resulting from <code class="docutils literal notranslate"><span class="pre">as_continuous</span></code> method. By setting the parameter <code class="docutils literal notranslate"><span class="pre">drop_duplic</span></code> to True, duplicated events will be removed automatically:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">continuous_evts</span><span class="o">.</span><span class="n">add_events</span><span class="p">(</span><span class="n">exp_evts</span><span class="p">,</span> <span class="n">drop_duplic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+ <span class="o">&gt;</span> <span class="n">Checking</span> <span class="k">for</span> <span class="n">duplicates</span> <span class="ow">in</span> <span class="n">events</span><span class="o">...</span>
+ <span class="o">&gt;</span> <span class="mi">3</span> <span class="n">event</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">removed</span><span class="o">.</span>
+<span class="n">continuous_evts</span>
+ <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Events</span><span class="p">,</span> <span class="mi">7</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span>
+    <span class="n">latency</span><span class="p">:</span> <span class="k">class</span> <span class="nc">Latency</span><span class="p">,</span> <span class="mi">7</span> <span class="n">events</span><span class="p">,</span> <span class="n">sf</span> <span class="o">=</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="p">[</span><span class="mi">1024</span> <span class="mi">1536</span> <span class="mi">1662</span> <span class="mi">1718</span> <span class="mi">3584</span> <span class="mi">3798</span> <span class="mi">3876</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span>    <span class="mf">1.5</span>   <span class="mf">1.623</span> <span class="mf">1.678</span> <span class="mf">3.5</span>   <span class="mf">3.709</span> <span class="mf">3.785</span><span class="p">]</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;16&#39;</span> <span class="s1">&#39;4&#39;</span> <span class="s1">&#39;onset&#39;</span> <span class="s1">&#39;32&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">0</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="mi">1</span>  <span class="mi">1</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="functions-for-events">
+<h2>3. Functions for events<a class="headerlink" href="#functions-for-events" title="Permalink to this headline">¶</a></h2>
+<span id="table-events-methods"></span><table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Table <code class="docutils literal notranslate"><span class="pre">Events</span></code> methods</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 24%" />
+<col style="width: 45%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><dl class="simple">
+<dt>Main parameters and</dt><dd><p>example</p>
+</dd>
+</dl>
+</th>
+<th class="head"><p>Return</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td colspan="4"><p>MANIPULATE</p></td>
+</tr>
+<tr class="row-odd"><td><p>nb_events</p></td>
+<td><p>Count single events</p></td>
+<td><p>exp_evts.nb_events()</p></td>
+<td><p>Number of single events</p></td>
+</tr>
+<tr class="row-even"><td><p>sort_events</p></td>
+<td><p>Sort events on latency</p></td>
+<td><p>exp_evts.sort_events()</p></td>
+<td><p>Occur in place</p></td>
+</tr>
+<tr class="row-odd"><td><p>copy</p></td>
+<td><p>Copy Events object</p></td>
+<td><p>exp_evts.copy()</p></td>
+<td><p>Events object</p></td>
+</tr>
+<tr class="row-even"><td><p>del_events</p></td>
+<td><p>Delete single events</p></td>
+<td><dl class="simple">
+<dt>List of event(s) index:</dt><dd><p>exp_evts.del_events([0])</p>
+</dd>
+</dl>
+</td>
+<td><p>Occur in place</p></td>
+</tr>
+<tr class="row-odd"><td><p>add_events</p></td>
+<td><p>Add single events</p></td>
+<td><p>Events object:
+exp_evts.add_events(Events(sample=3,code=2,chan=-1,sf=1024))</p></td>
+<td><p>Occur in place</p></td>
+</tr>
+<tr class="row-even"><td><p>drop_duplicates</p></td>
+<td><p>Remove events identical to a
+previous event (same code,
+channel,and latency)</p></td>
+<td><p>exp_evts.drop_duplicates()</p></td>
+<td><p>Occur in place</p></td>
+</tr>
+<tr class="row-odd"><td colspan="4"><p>ACCESS</p></td>
+</tr>
+<tr class="row-even"><td><p>get_events</p></td>
+<td><p>Get the specified events</p></td>
+<td><dl class="simple">
+<dt>List of event(s) index:</dt><dd><p>exp_evts.get_events([1,4])</p>
+</dd>
+</dl>
+</td>
+<td><p>Events object containing
+specified events</p></td>
+</tr>
+<tr class="row-odd"><td><p>get_duplicates</p></td>
+<td><p>Find events identical to a
+previous event (same code,
+channel, and latency)</p></td>
+<td><p>exp_evts.get_duplicates()</p></td>
+<td><p>Indices of duplicated
+events in numpy array</p></td>
+</tr>
+<tr class="row-even"><td><p>find_events</p></td>
+<td><p>Find events satisfying the
+specified requirements</p></td>
+<td><dl class="simple">
+<dt>Events object or wanted requirements:</dt><dd><p>stim_evts_idx = exp_evts.find_events(code=4,...)</p>
+</dd>
+</dl>
+</td>
+<td><p>Wanted indices in
+numpy array</p></td>
+</tr>
+<tr class="row-odd"><td><p>find_and_get_events</p></td>
+<td><p>Get events satisfying the
+specified requirements</p></td>
+<td><dl class="simple">
+<dt>Events object or wanted requirements:</dt><dd><p>stim_evts = exp_evts.find_and_get_events(code=4,...)</p>
+</dd>
+</dl>
+</td>
+<td><p>Events object containing
+wanted events</p></td>
+</tr>
+<tr class="row-even"><td><p>find_and_del_events</p></td>
+<td><p>Delete events satisfying the
+specified requirements</p></td>
+<td><dl class="simple">
+<dt>Events object or wanted requirements:</dt><dd><p>exp_evts.find_and_del_events(code=2,...)</p>
+</dd>
+</dl>
+</td>
+<td><p>Occur in place</p></td>
+</tr>
+<tr class="row-odd"><td colspan="4"><p>SEGMENT</p></td>
+</tr>
+<tr class="row-even"><td><p>segment</p></td>
+<td><p>Segment events based on
+reference event code (‘code_t0’),
+or specified events indices</p></td>
+<td><dl class="simple">
+<dt>Reference event code:</dt><dd><p>exp_evts.segment(code_t0=4, tmin=0, tmax=1)</p>
+</dd>
+<dt>Events indices:</dt><dd><p>exp_evts.segment(pos_events0=[2,4], tmin=0, tmax=1)</p>
+</dd>
+</dl>
+</td>
+<td><p>EpochEvents object</p></td>
+</tr>
+<tr class="row-odd"><td colspan="4"><p>SAVE</p></td>
+</tr>
+<tr class="row-even"><td><p>to_csv</p></td>
+<td><p>Save events in a csv file</p></td>
+<td><dl class="simple">
+<dt>Filename:</dt><dd><p>exp_evts.to_csv(fname,...)</p>
+</dd>
+</dl>
+</td>
+<td><p>Create a csv file</p></td>
+</tr>
+<tr class="row-odd"><td><p>to_txt</p></td>
+<td><p>Save events in a txt file,
+corresponding to BrainVision
+text export format</p></td>
+<td><dl class="simple">
+<dt>Filename:</dt><dd><p>exp_evts.to_txt(fname,...)</p>
+</dd>
+</dl>
+</td>
+<td><p>Create a txt file</p></td>
+</tr>
+<tr class="row-even"><td><p>to_bva_vmrk</p></td>
+<td><p>Save events in a txt file,
+corresponding to BrainVision
+vmrk format</p></td>
+<td><dl class="simple">
+<dt>Filename:</dt><dd><p>exp_evts.to_bva_vrmk(fname,...)</p>
+</dd>
+</dl>
+</td>
+<td><p>Create a vmrk file</p></td>
+</tr>
+<tr class="row-odd"><td><p>to_bva_markers</p></td>
+<td><p>Save events in a txt file,
+corresponding to BrainVision
+'.Markers' format</p></td>
+<td><dl class="simple">
+<dt>Filename:</dt><dd><p>exp_evts.to_bva_markers(fname,...)</p>
+</dd>
+</dl>
+</td>
+<td><p>Create a .Markers file</p></td>
+</tr>
+</tbody>
+</table>
+<span id="table-epochevents-methods"></span><table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Table <code class="docutils literal notranslate"><span class="pre">EpochEvents</span></code> methods</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 24%" />
+<col style="width: 45%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><dl class="simple">
+<dt>Main parameters and</dt><dd><p>example</p>
+</dd>
+</dl>
+</th>
+<th class="head"><p>Return</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td colspan="4"><p>MANIPULATE</p></td>
+</tr>
+<tr class="row-odd"><td><p>nb_events</p></td>
+<td><p>Count single events</p></td>
+<td><p>epochs_evts.nb_events()</p></td>
+<td><p>Number of single events</p></td>
+</tr>
+<tr class="row-even"><td><p>as_continuous</p></td>
+<td><p>&quot;Flatten&quot; EpochEvents and
+recreate original continuous
+Events</p></td>
+<td><p>epochs_evts.as_continuous()</p></td>
+<td><p>Continuous Events object
+and trial index of each
+event</p></td>
+</tr>
+<tr class="row-odd"><td colspan="4"><p>MANIPULATE AND ACCESS</p></td>
+</tr>
+<tr class="row-even"><td><p>nb_trials</p></td>
+<td><p>Count trials</p></td>
+<td><p>epochs_evts.nb_trials()</p></td>
+<td><p>Number or trials</p></td>
+</tr>
+<tr class="row-odd"><td><p>del_trial</p></td>
+<td><p>Delete trial events</p></td>
+<td><dl class="simple">
+<dt>Trial index:</dt><dd><p>epochs_evts.del_trial(0)</p>
+</dd>
+</dl>
+</td>
+<td><p>Occur in place</p></td>
+</tr>
+<tr class="row-even"><td><p>add_trial</p></td>
+<td><p>Add trial events</p></td>
+<td><dl class="simple">
+<dt>Events object and starting, time 0 and ending trial latencies:</dt><dd><dl class="simple">
+<dt>epochs_evts.add_trial(Events(time=[5.5,5.65], code=[4,32],</dt><dd><p>chan=[-1,-1], sf=1024), latency_min, latency0, latency_max)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+<td><p>Occur in place</p></td>
+</tr>
+<tr class="row-odd"><td><p>get_trials</p></td>
+<td><p>Get the specified trials</p></td>
+<td><dl class="simple">
+<dt>List of index:</dt><dd><p>trial_epochs = epochs_evts.get_trials([0])</p>
+</dd>
+</dl>
+</td>
+<td><p>EpochEvents containing
+specified trials</p></td>
+</tr>
+<tr class="row-even"><td><p>get_data</p></td>
+<td><p>Get the corresponding signal
+portions in given data array</p></td>
+<td><dl class="simple">
+<dt>Data array:</dt><dd><p>data_epochs = epochs_evts.get_data(data)</p>
+</dd>
+</dl>
+</td>
+<td><p>3D data array containing
+data epochs
+(trials x chan x times)</p></td>
+</tr>
+<tr class="row-odd"><td colspan="4"><p>SAVE</p></td>
+</tr>
+<tr class="row-even"><td><p>to_csv</p></td>
+<td><p>Save EpochEvents in a csv file</p></td>
+<td><dl class="simple">
+<dt>Filename:</dt><dd><p>epochs_evts.to_csv(fname,...)</p>
+</dd>
+</dl>
+</td>
+<td><p>Create a csv file</p></td>
+</tr>
+<tr class="row-odd"><td><p>continuous_to_csv</p></td>
+<td><p>&quot;Flatten&quot; EpochEvents and save
+continuous in a csv file</p></td>
+<td><dl class="simple">
+<dt>Filename:</dt><dd><p>epochs_evts.continuous_to_csv(fname,...)</p>
+</dd>
+</dl>
+</td>
+<td><p>Create a csv file</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Events class and functions</a><ul>
+<li><a class="reference internal" href="#the-events-class">1. The <code class="docutils literal notranslate"><span class="pre">Events</span></code> class</a><ul>
+<li><a class="reference internal" href="#events-latencies">1.1 Events latencies</a></li>
+<li><a class="reference internal" href="#class-events">1.2 Class <code class="docutils literal notranslate"><span class="pre">Events</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-epochevents-class">2. The <code class="docutils literal notranslate"><span class="pre">EpochEvents</span></code> class</a></li>
+<li><a class="reference internal" href="#functions-for-events">3. Functions for events</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="guide_emgtools.html"
+                          title="previous chapter">Automatic detection of EMG busts</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="guide_vizEMG.html"
+                          title="next chapter">Onsets and offsets visualization and manual correction</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/guide_events.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="guide_vizEMG.html" title="Onsets and offsets visualization and manual correction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="guide_emgtools.html" title="Automatic detection of EMG busts"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Myonset 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Events class and functions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Laure Spieser and Boris Burle.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1559 @@
+
+<!DOCTYPE html>
+
+<html lang="english">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>API reference &#8212; Myonset 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Onsets and offsets visualization and manual correction" href="guide_vizEMG.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="guide_vizEMG.html" title="Onsets and offsets visualization and manual correction"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Myonset 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API reference</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="api-reference">
+<h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<section id="module-myonset.use_mne">
+<span id="signal-preprocessing"></span><h2>Signal preprocessing<a class="headerlink" href="#module-myonset.use_mne" title="Permalink to this headline">¶</a></h2>
+<p>Created on Fri Jan 12 11:27:20 2018</p>
+<p>&#64;author: Laure Spieser and Boris Burle
+Laboratoire de Neurosciences Cognitives
+UMR 7291, CNRS, Aix-Marseille Université
+3, Place Victor Hugo
+13331 Marseille cedex 3</p>
+<p>This file is part of Myonset.</p>
+<p>Myonset is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>Myonset is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with Myonset. If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_mne.apply_filter">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_mne.</span></span><span class="sig-name descname"><span class="pre">apply_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_mne.apply_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply high and low pass filters to input signal.</p>
+<dl class="simple">
+<dt>raw<span class="classifier">mne Raw data structure</span></dt><dd><p>Raw mne data containing input signal to filter.</p>
+</dd>
+<dt>ch_names<span class="classifier">list  | str</span></dt><dd><p>List of channel names on which filter will be applied. If 'all',
+filter is applied on all channels (Default 'all').</p>
+</dd>
+<dt>N<span class="classifier">int</span></dt><dd><p>The order of the filter (Default 3).</p>
+</dd>
+<dt>low_cutoff<span class="classifier">float</span></dt><dd><p>Cutoff frequency for high pass filter. If 'None', no high pass filter
+is applied.</p>
+</dd>
+<dt>high_cutoff<span class="classifier">float</span></dt><dd><p>Cutoff frequency for low pass filter. If 'None', no low pass filter
+is applied.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>raw_filter<span class="classifier">raw mne data structure</span></dt><dd><p>Raw mne data containing filtered signal.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_mne.bipolar_ref">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_mne.</span></span><span class="sig-name descname"><span class="pre">bipolar_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cathode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_ch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_mne.bipolar_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set bipolar montage.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_mne.drop_channels">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_mne.</span></span><span class="sig-name descname"><span class="pre">drop_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_mne.drop_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete designated channels.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_mne.get_data_array">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_mne.</span></span><span class="sig-name descname"><span class="pre">get_data_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_mne.get_data_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get raw data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_mne.select_channels">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_mne.</span></span><span class="sig-name descname"><span class="pre">select_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_mne.select_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select designated channels.</p>
+</dd></dl>
+
+<span class="target" id="module-myonset.use_txt"></span><p>Created on Fri Jan 12 11:27:20 2018</p>
+<p>&#64;author: Laure Spieser and Boris Burle
+Laboratoire de Neurosciences Cognitives
+UMR 7291, CNRS, Aix-Marseille Université
+3, Place Victor Hugo
+13331 Marseille cedex 3</p>
+<p>This file is part of Myonset.</p>
+<p>Myonset is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>Myonset is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with Myonset. If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_txt.apply_filter">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_txt.</span></span><span class="sig-name descname"><span class="pre">apply_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_txt.apply_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply high and low pass filters to input signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>2D array</em>) -- Array containing input signal to filter, channels are on axis 0,
+time samples on axis 1.</p></li>
+<li><p><strong>ch_dict</strong> (<em>dict</em>) -- Channel names / channel index correspondance dictionnary.</p></li>
+<li><p><strong>sf</strong> (<em>int</em><em> | </em><em>float</em>) -- Input signal sampling frequency.</p></li>
+<li><p><strong>ch_names</strong> (<em>list</em><em>  | </em><em>str</em>) -- List of channel names on which filter will be applied. If 'all',
+filter is applied on all channels (default 'all').</p></li>
+<li><p><strong>N</strong> (<em>int</em>) -- The order of the filter (default 3).</p></li>
+<li><p><strong>low_cutoff</strong> (<em>float</em>) -- Cutoff frequency for high pass filter. If 'None', no high pass filter
+is applied.</p></li>
+<li><p><strong>high_cutoff</strong> (<em>float</em>) -- Cutoff frequency for low pass filter. If 'None', no low pass filter
+is applied.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data_filter</strong> -- Data array containing filtered signal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_txt.bipolar_ref">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_txt.</span></span><span class="sig-name descname"><span class="pre">bipolar_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cathode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_ch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_txt.bipolar_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set bipolar montage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>2D array</em>) -- Array containing input signal, channels are on axis 0,
+time samples on axis 1.</p></li>
+<li><p><strong>ch_dict</strong> (<em>dict</em>) -- Channel names / channel index correspondance dictionnary.</p></li>
+<li><p><strong>anode</strong> (<em>list</em><em>  | </em><em>str</em>) -- List of channel names for anode.</p></li>
+<li><p><strong>cathode</strong> (<em>list</em><em>  | </em><em>str</em>) -- List of channel names for cathode.</p></li>
+<li><p><strong>new_ch</strong> (<em>list</em><em>  | </em><em>str</em>) -- List of the new channel names. If None, return anode names (default None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>date</strong> (<em>2D array</em>) -- Channels on axis 0, time samples in axis 1.</p></li>
+<li><p><strong>ch_dict</strong> (<em>dict</em>) -- Channels dictionnaries, with channel names as keys and channel index as
+values.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_txt.drop_channels">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_txt.</span></span><span class="sig-name descname"><span class="pre">drop_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_txt.drop_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete designated channels.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_txt.load_txt_file">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_txt.</span></span><span class="sig-name descname"><span class="pre">load_txt_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_names_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headerlines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_txt.load_txt_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load signal from text file.</p>
+<p>Load signal in text file, organised with channels in columns and time sample
+in rows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Name of the file to load.</p></li>
+<li><p><strong>sep</strong> (<em>str</em>) -- Separator between columns (default &quot;    &quot;).</p></li>
+<li><p><strong>ch_names_line</strong> (<em>int</em>) -- Line in text file containing channel names. If None, channel names are
+['channel0', 'channel1', ...] (default None).</p></li>
+<li><p><strong>headerlines</strong> (<em>int</em>) -- Number of headerlines to skip (default 1).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>array</strong> (<em>2D array</em>) -- Channels on axis 0, time samples in axis 1.</p></li>
+<li><p><strong>ch_dict</strong> (<em>dict</em>) -- Channels dictionnaries, with channel names as keys and channel index as
+values.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.use_txt.select_channels">
+<span class="sig-prename descclassname"><span class="pre">myonset.use_txt.</span></span><span class="sig-name descname"><span class="pre">select_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.use_txt.select_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select designated channels.</p>
+</dd></dl>
+
+</section>
+<section id="module-myonset">
+<span id="signal-processing-and-automatic-detection"></span><h2>Signal processing and automatic detection<a class="headerlink" href="#module-myonset" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of Myonset.</p>
+<p>Myonset is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>Myonset is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with Myonset. If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.detector_var">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">detector_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varying_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mbsl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stbsl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_derivative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moving_avg_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.detector_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indices of time windows containing signal exceeding the
+specified variance.</p>
+<p>Define the intervals during which one or several portions of input
+signal amplitude exceeds mbsl + (th * stbsl). Intervals are merged when
+the delay between the interval offset and the next interavl onset is
+inferior to the time limit. Intervals containing less than the defined
+minimal number of samples are excluded.
+For EMG, this gives time windows where EMG bursts are supposed to occur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_trial</strong> (<em>1D array</em>) -- Input signal. Note that data_trial signal is always rectified before
+detection.</p></li>
+<li><p><strong>times</strong> (<em>1D array</em>) -- Time instants.</p></li>
+<li><p><strong>th</strong> (<em>float</em>) -- Threshold to multiply by stbsl (default 3.5).</p></li>
+<li><p><strong>time_limit</strong> (<em>float</em>) -- Lowest time delay (in second) between bursts. Bursts intervals are
+merged When less time separates interval offset from next interval
+onset (default 25ms).</p></li>
+<li><p><strong>min_samples</strong> (<em>float</em>) -- Minimal number of data points exceeding mbsl + (th * stbsl) in signal
+intervals. If less points are present, interval is excluded.
+This is applied after merging intervals separated by less than the
+time limit (default 3).</p></li>
+<li><p><strong>varying_min</strong> (<em>float</em>) -- If True, the minimal number of data points exceeding threshold required
+to define a burst is increased in noisy trials. The noise is estimated
+by the frequency of &quot;small&quot; bursts (freq_small), i.e., bursts containing
+less than twice the defined minimal number of samples. The minimal
+number of samples is then increased up to min_samples +
+(freq_small * varying_min) (Default is 1, set to 0 to have no
+change of min_samples).</p></li>
+<li><p><strong>mbsl</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the mean baseline value of the trial (between first
+time sample and time sample 0). To use global mbsl, use
+getGlobalVariance function, applied on same data type as input
+signal (e.g., raw EMG, teager-kayser...)(default None).</p></li>
+<li><p><strong>stbsl</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the baseline standard deviation of the trial
+(between first time sample and time sample 0). To use global stbsl,
+apply getGlobalVariance on the same data type as input signal
+(e.g., raw EMG, teager-kayser...)(default None).</p></li>
+<li><p><strong>sf</strong> (<em>float</em>) -- Sampling frequency.</p></li>
+<li><p><strong>use_derivative</strong> (<em>bool</em>) -- If True signal derivative is used to determine offset (default False).</p></li>
+<li><p><strong>moving_avg_size</strong> (<em>int</em>) -- Defines the window size (in samples) for the moving average applied
+on signal before detection. If moving_avg_size is equal to 1, this has
+no effect (default is 1).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Each line corresponds to one burst interval. First column contains
+onset, second column contains offset.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.filtfilter">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">filtfilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.filtfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>FIXME: sg.filtfilt is better than sg.lfilter especially for low-pass filtering so
+I think we should use it instead of hfilter and lfilter, agreed ? -&gt; no actually, hp and low are better because no modifciation at the beginning of the burst</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.get_onset_ip">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">get_onset_ip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moving_avg_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.get_onset_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return min and max of signal integrated profile.</p>
+<p>Compute the signal integrated profile and return the position of min
+and max, assumed to correspond to the onset and offset of activity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_trial</strong> (<em>1D array</em>) -- Input signal.</p></li>
+<li><p><strong>times</strong> (<em>1D array</em>) -- Time instants.</p></li>
+<li><p><strong>samples</strong> (<em>1D array</em>) -- Time samples in which min and max are defined. If samples = 'all',
+all samples are used (default is 'all').</p></li>
+<li><p><strong>moving_avg_size</strong> (<em>int</em>) -- Defines the window size (in samples) for the moving average applied
+on integrated profile before to define min and max. If movingAvg_size
+is equal to 1, this has no effect (default is 1).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>onset,offset</strong> -- Indices of data_trial corresponding to EMG onset and offset</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Liu J, Liu Q (2016) Use of the integrated profile for voluntary muscle
+activity detection using EMG signals with spurious background spikes: A
+study with incomplete spinal cord injury. Biomed Signal Process Control
+24:19-24.</p>
+<p>Santello M, McDonagh MJN (1998) The control of timing and amplitude of EMG
+activity in landing movements in humans. Exp Physiol 83:857-874.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.get_onsets">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">get_onsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_limit_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_samples_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varying_min_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mbsl_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stbsl_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_limit_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_samples_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varying_min_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mbsl_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stbsl_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip_search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[-</span> <span class="pre">0.05,</span> <span class="pre">0.05]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moving_avg_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.015</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.get_onsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return burst(s) onset(s) and offset(s).</p>
+<p>Identify the time windows in data_trial containing EMG bursts, by looking
+for signal exceeding the specified variance, using 'detector_var' function.
+Then searchs for minimal and maximal values of each window integrated
+profile.
+Finally, onset is defined as the earliest between the time sample of the
+minimal value of integrated profile and the EMG burst start defined by
+'detector_var' (i.e., signal exceeding the specified variance). Likewise,
+offset is defined as the latest between the sample of maximal value of
+integrated profile and the end of EMG burst as defined by 'detector_var'.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_trial</strong> (<em>1D array</em>) -- Input signal.</p></li>
+<li><p><strong>times</strong> (<em>1D array</em>) -- Time instants.</p></li>
+<li><p><strong>use_raw</strong> (<em>bool</em>) -- If True, apply 'detector_var' on raw (i.e., data_trial) signal.</p></li>
+<li><p><strong>th_raw</strong> (<em>float</em>) -- Threshold to multiply by variance, used in 'detector_var' applied
+on raw signal (default 3.5).</p></li>
+<li><p><strong>time_limit_raw</strong> (<em>float</em>) -- Lowest time delay (in second) between bursts for raw signal. Bursts
+intervals are merged When less time separates interval offset from next
+interval onset. (default is 25ms)</p></li>
+<li><p><strong>min_samples_raw</strong> (<em>float</em>) -- Minimal number of data points exceeding threshold to define a burst for
+raw signal. Bursts intervals containing less points exceeding the
+specified variance are excluded. This is applied after merging intervals
+separated by less than the time limit (default is 3).</p></li>
+<li><p><strong>varying_min_raw</strong> (<em>float</em>) -- If True, the minimal number of data points exceeding threshold required
+to define a burst is increased in noisy trials for raw signal. The noise
+is estimated by the frequency of &quot;small&quot; bursts (freq_small), i.e.,
+bursts containing less than twice the defined minimal number of samples.
+The minimal number of samples is then increased up to min_samples +
+(freq_small * varying_min) (Default is 1, set to 0 to have no change of
+min_samples).</p></li>
+<li><p><strong>mbsl_raw</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the mean baseline value of the raw signal trial (between
+first time sample and time sample 0). To use global mbsl, use
+'global_var' function (default is None).</p></li>
+<li><p><strong>stbsl_raw</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the baseline standard deviation of the raw signal trial
+(between first time sample and time sample 0). To use global stbsl,
+apply 'global_var' (default is None).</p></li>
+<li><p><strong>use_tkeo</strong> (<em>bool</em>) -- If True, apply 'detector_var' on Teager-Kaiser transformation of
+data_trial signal.</p></li>
+<li><p><strong>th_tkeo</strong> (<em>float</em>) -- Threshold to multiply by variance, used in 'detector_var' applied
+on Teager-Kaiser transformation of data_trial signal (default is 8).</p></li>
+<li><p><strong>time_limit_tkeo</strong> (<em>float</em>) -- Lowest time delay (in second) between bursts for Teager-Kaiser
+transformation of data_trial signal. Bursts intervals are merged When
+less time separates interval offset from next interval onset
+(default is 25ms).</p></li>
+<li><p><strong>min_samples_tkeo</strong> (<em>float</em>) -- Minimal number of data points exceeding threshold to define a burst for
+Teager-Kaiser transformation of data_trial signal. Bursts intervals
+containing less points exceeding the specified variance are excluded.
+This is applied after merging intervals separated by less than the time
+limit (default is 10).</p></li>
+<li><p><strong>varying_min_tkeo</strong> (<em>float</em>) -- If True, the minimal number of data points exceeding threshold required
+to define a burst is increased in noisy trials for Teager-Kaiser
+transformation of data_trial signal. The noise is estimated by the
+frequency of &quot;small&quot; bursts (freq_small), i.e., bursts containing less
+than twice the defined minimal number of samples. The minimal number of
+samples is then increased up to min_samples + (freq_small * varying_min)
+(Default is 0, meaning no change of min_samples).</p></li>
+<li><p><strong>mbsl_tkeo</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the mean baseline value of the Teager-Kaiser transformation
+of data_trial signal (between first time sample and time sample 0). To
+use global mbsl, use 'global_var' function on the Teager-Kaiser
+signal transformation (default is None).</p></li>
+<li><p><strong>stbsl_tkeo</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the baseline standard deviation of the Teager-Kaiser
+transformation of data_trial signal (between first time sample and time
+sample 0). To use global stbsl, apply 'global_var' on Teager-Kaiser
+signal transformation (default is None).</p></li>
+<li><p><strong>sf</strong> (<em>float</em>) -- Sampling frequency.</p></li>
+<li><p><strong>ip_search</strong> (<em>1D array</em>) -- Time limits (in second) around EMG burst intervals (as defined by
+'detector_var') to search for minimal and maximal integrated profile
+values (Default [-.050 0.050]).</p></li>
+<li><p><strong>moving_avg_window</strong> (<em>float</em>) -- Time window size (in second) of moving average applied to smooth
+integrated profile before to define minimal and maximal values. To
+not smooth at all, set moving_avg_window to 1/sf (Default is 0.015).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>onsets,offsets</strong> -- Indices of data_trial corresponding to EMG onsets and offsets</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>lists</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.get_onsets_dbl_th">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">get_onsets_dbl_th</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_above_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mbsl_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stbsl_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mbsl_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stbsl_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip_search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[-</span> <span class="pre">0.05,</span> <span class="pre">0.05]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moving_avg_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.015</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.get_onsets_dbl_th" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return burst(s) onset(s) and offset(s).</p>
+<p>Identify the time windows in data_trial containing EMG bursts, by looking
+for signal exceeding the specified variance, using 'detector_dbl_th'
+function.
+Then searchs for minimal and maximal values of each window integrated
+profile.
+Finally, onset is defined as the earliest between the time sample of the
+minimal value of integrated profile and the EMG burst start defined by
+'detector_dbl_th' (i.e., signal exceeding the specified variance).
+Likewise, offset is defined as the earliest between the sample of maximal
+value of integrated profile and the end of EMG burst as defined by
+'detector_dbl_th'.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_trial</strong> (<em>1D array</em>) -- Input signal.</p></li>
+<li><p><strong>times</strong> (<em>1D array</em>) -- Time instants.</p></li>
+<li><p><strong>window_size</strong> (<em>float</em>) -- Duration of the upfront time window (in second) in which samples
+exceeding the threshold are detected.</p></li>
+<li><p><strong>min_above_threshold</strong> (<em>float</em>) -- Minimum proportion of time samples exceeding the theshold in the
+time window to detect signal (default 50 %).</p></li>
+<li><p><strong>use_raw</strong> (<em>bool</em>) -- If True, 'detector_dbl_th' is applied on raw (i.e., data_trial) signal.</p></li>
+<li><p><strong>th_raw</strong> (<em>float</em>) -- Threshold to multiply by stbsl for raw signal (default 3).</p></li>
+<li><p><strong>mbsl_raw</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the mean baseline value of raw signal (between first time
+sample and time sample 0). To use global mbsl, use 'global_var'
+(default is None).</p></li>
+<li><p><strong>stbsl_raw</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the baseline standard deviation of raw signal (between
+first time sample and time sample 0). To use global stbsl, apply
+'global_var' (default is None).</p></li>
+<li><p><strong>use_tkeo</strong> (<em>bool</em>) -- If True, 'detector_dbl_th' is applied on Teager-Kaiser transformation
+of data_trial signal.</p></li>
+<li><p><strong>th_tkeo</strong> (<em>float</em>) -- Threshold to multiply by stbsl for Teager-Kaiser transformation of
+data_trial signal (default 6).</p></li>
+<li><p><strong>mbsl_tkeo</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the mean baseline value of the Teager-Kaiser transformation
+of data_trial signal (between first time sample and time sample 0). To
+use global mbsl, use 'global_var' function on the Teager-Kaiser
+signal transformation (default is None).</p></li>
+<li><p><strong>stbsl_tkeo</strong> (<em>float</em><em> | </em><em>None</em>) -- If None, use the baseline standard deviation of the Teager-Kaiser
+transformation of data_trial signal (between first time sample and time
+sample 0). To use global stbsl, apply 'global_var' on Teager-Kaiser
+signal transformation (default is None).</p></li>
+<li><p><strong>min_samples</strong> (<em>float</em>) -- Minimal number of data points exceeding mbsl + (th * stbsl) in signal
+intervals. If less points are present, interval is excluded (default 3).</p></li>
+<li><p><strong>sf</strong> (<em>float</em>) -- Sampling frequency.</p></li>
+<li><p><strong>ip_search</strong> (<em>1D array</em>) -- Time limits (in second) around EMG burst intervals (as defined by
+'detector_dbl_th') to search for minimal and maximal integrated profile
+values (Default [-.050 0.050]).</p></li>
+<li><p><strong>moving_avg_window</strong> (<em>float</em>) -- Time window size (in second) of moving average applied to smooth
+integarted profile before to define minimal and maximal values. To
+not smooth at all, set moving_avg_window to 1/sf (Default is 0.015).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>onsets,offsets</strong> -- Indices of data_trial corresponding to EMG onsets and offsets</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>lists</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.get_signal_max">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">get_signal_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_signals</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.get_signal_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get signal max of each signal portion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>list_signals</strong> (<em>list</em>) -- List of arrays containing signal portions (e.g., obtained using
+'get_signal_portions').</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>val</strong> (<em>1D array</em>) -- Array containing maximum value for each array of list_signals.</p></li>
+<li><p><strong>lat</strong> (<em>1D array</em>) -- Array containing latency of maximum value for each array of list_signals.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.get_signal_portions">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">get_signal_portions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.get_signal_portions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get signals between each start_sample and stop_sample.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>1D array</em>) -- Input signal array.</p></li>
+<li><p><strong>start_samples</strong> (<em>list</em><em> | </em><em>array of int</em>) -- Start samples of signal portions to get.</p></li>
+<li><p><strong>stop_samples</strong> (<em>list</em><em> | </em><em>array of int</em>) -- Stop (i.e., end) samples of signal portions to get.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>list_signals</strong> -- List of arrays containing signal portions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.global_var">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">global_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_epochs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cor_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.global_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return mean and standard deviation of the input signal between
+tmin and tmax.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_epochs</strong> (<em>3D array</em>) -- First dimension should be trials, second dimension shoud be
+channels, and last dimension is times</p></li>
+<li><p><strong>times</strong> (<em>1D array</em>) -- Time instants</p></li>
+<li><p><strong>tmin</strong> (<em>float</em><em> | </em><em>None</em>) -- Start time for mean/variance computation. If None start at
+first sample (default None).</p></li>
+<li><p><strong>tmax</strong> (<em>float</em><em> | </em><em>None</em>) -- End time for mean/variance computation. If None end at time 0
+(default None).</p></li>
+<li><p><strong>use_tkeo</strong> (<em>bool</em>) -- If True, compute mean and variance on the Teaker-Kayser
+transformation of the input signal (default True).</p></li>
+<li><p><strong>cor_var</strong> (<em>float</em><em> | </em><em>None</em>) -- If float, correct for outliers. The return mean and variance are
+computed on all sample signals whose abs(z-score) &lt; corVar
+(default None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>mbsl,stbsl</strong> -- Mean and standard deviation on each channel.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.hpfilter">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">hpfilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.hpfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply high pass filter to input signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>array_like</em><em> (</em><em>1D</em><em> or </em><em>2D</em><em>)</em>) -- Input signal to filter. For 2D arrays, must contain channels on axis 0
+and time samples on axis 1.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) -- The order of the filter (default 3).</p></li>
+<li><p><strong>sf</strong> (<em>float</em>) -- Sampling frequency.</p></li>
+<li><p><strong>cutoff</strong> (<em>int</em><em> | </em><em>float</em>) -- Cutoff frequency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> -- Filtered signal</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.integrated_profile">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">integrated_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.integrated_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return signal integrated profile.</p>
+<p>Compute the signal integrated profile, defined as the difference
+between the empirical cumulative sum of a dataset, and its uniform
+equivalent (straigth line).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_trial</strong> (<em>1D array</em>) -- Input signal</p></li>
+<li><p><strong>times</strong> (<em>1D array</em>) -- Time instants</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>d</strong> -- Integrated profile</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>1D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.lpfilter">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">lpfilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.lpfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply low pass filter to input signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>array_like</em>) -- Input signal to filter.For 2D arrays, must contain channels on axis 0
+and time samples on axis 1.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) -- The order of the filter (default 3).</p></li>
+<li><p><strong>sf</strong> (<em>float</em>) -- Sampling frequency.</p></li>
+<li><p><strong>cutoff</strong> (<em>float</em>) -- Cutoff frequency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> -- Filtered signal</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.moving_avg">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">moving_avg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.moving_avg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute signal moving average with specified window size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_trial</strong> (<em>1D array_like</em>) -- Input signal.</p></li>
+<li><p><strong>window_size</strong> (<em>int</em>) -- Size of the moving average window in data samples.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>1D signal array after moving average.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.notch_filter">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">notch_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ripple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'butter'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.notch_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply notch filter to input signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>array_like</em>) -- Input signal to filter. For 2D arrays, must contain channels on axis 0
+and time samples on axis 1.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) -- The order of the filter (default 3).</p></li>
+<li><p><strong>sf</strong> (<em>float</em>) -- Sampling frequency</p></li>
+<li><p><strong>freq</strong> (<em>float</em>) -- The centerline frequency to be filtered.</p></li>
+<li><p><strong>band</strong> (<em>float</em>) -- The bandwidth around the centerline frequency that you wish to
+filter.</p></li>
+<li><p><strong>ripple</strong> -- The maximum passband ripple that is allowed in db</p></li>
+<li><p><strong>filter_type</strong> (<em>'butter'</em><em> | </em><em>'bessel'</em><em> | </em><em>'cheby1'</em><em> | </em><em>'cheby2'</em><em> | </em><em>'ellip'</em>) -- The filter type to use (default 'butter').</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> -- Filtered signal</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.set_log_file">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">set_log_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.set_log_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the log to print to a file.
+Largely inspired by the logging system of mne-python
+###COPY FROM MNE###</p>
+<p>Set the log to print to a file using the 'logging' module. For more information
+about logging module, see: <a class="reference external" href="https://docs.python.org/dev/howto/logging.html">https://docs.python.org/dev/howto/logging.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Filename of the log to print to.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) -- Overwrite the log file (if it exists) if True. If False, statements
+will be appended to the log (default).
+FIXME: define the kwargs used, for example &quot;logging.INFO&quot;.
+Laure: I don't think we should define logging.INFO, it is not a kwarg of our function (it can't be passed as a kwarg to set_log_file). I add 'using logging module'</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.show_trial">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">show_trial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_limit_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_samples_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varying_min_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mbsl_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stbsl_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_limit_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_samples_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varying_min_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mbsl_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stbsl_tkeo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip_search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[-</span> <span class="pre">0.05,</span> <span class="pre">0.05]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moving_avg_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.015</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.show_trial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show data trial burst detection and onset/offset detection.
+See 'get_onsets' function for complete description of the parameters.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.signal_windows">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">signal_windows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.signal_windows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define mean temporal windows around the given time sections.</p>
+<p>The time window for each section starts at the average value between
+the end of the previous section and the beginning of the current section.
+The end of the time window corresponds to the start of the next time
+window, i.e., the average between the end of the current section and
+the beginning of the next section. Start of first window and end of last
+windows are defined by the average with start_sample and end_sample.
+If any windows starts before start value, start value is changed to 0. If
+any window ends after end value, end value is changed to the maximal value
+of sections.
+This function is used for instance to define the different time windows
+used for EMG onset search.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sections</strong> (<em>2D array</em>) -- Each line corresponds to one section. First column gives the section's
+start, second column gives the section's end.</p></li>
+<li><p><strong>start</strong> (<em>float</em>) -- The beginning of the first time window corresponds to the average
+value between start and the start of first section.</p></li>
+<li><p><strong>end</strong> (<em>float</em>) -- The end of the last time window corresponds to the average
+value between the end of last section and end.</p></li>
+<li><p><strong>warn</strong> (<em>bool</em>) -- If True, a warning is displayed when start value is changed to 0 or
+when end value is changed to maximal value of sections (default False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Each line corresponds to one time window. First column contains
+window's start, second columns contains window's end.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="myonset.tkeo">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">tkeo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.tkeo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Teaker-Kayser transformation of the input signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>array</strong> (<em>1D array</em>) -- Signal on which Teager-Kaiser energy operator should be
+computed. If it has more than one dimension, a warning
+is issued and an array of zeros is returned.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>tkeo</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array of same dimension as imput array</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Li X, Zhou P, Aruin AS (2007) Teager–Kaiser energy operation of surface EMG
+improves muscle activity onset detection. Ann Biomed Eng 35:1532–1538.</p>
+<p>Solnik S, Rider P, Steinweg K, DeVita P, HortobaÂgyi T (2010) Teager-Kaiser
+energy operator signal conditioning improves EMG onset detection. Eur J Appl
+Physiol. 110(3):489-98. doi: 10.1007/s00421-010-1521-8</p>
+<p>Tenan MS, Tweedell AJ, Haynes CA (2017) Analysis of statistical and standard
+algorithms for detecting muscle onset with surface electromyography.
+PLoS One. 12(5):e0177312. doi: 10.1371/journal.pone.0177312.</p>
+</dd></dl>
+
+</section>
+<section id="tools-for-events">
+<h2>Tools for events<a class="headerlink" href="#tools-for-events" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of Myonset.</p>
+<p>Myonset is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>Myonset is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with Myonset. If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">EpochEvents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>EpochEvents class, storing and manipulating epoch event markers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">list_evts_trials</span></span></dt>
+<dd><p>List of Events objects of consecutive trials (i.e., list_evts_trials[n]
+contains trial n). Latency in single trials' Events is relative to the
+trial's time zero (t0) event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">tmin</span></span></dt>
+<dd><p>Latency object containing starting time and sample of consecutive trials
+(tmin[n] contains starting latency of trial n).Latencies are given
+relative to the original continous Events object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>class Latency</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">t0</span></span></dt>
+<dd><p>Latency object containing time and sample of the 'time0' event (i.e.,
+the event used for segmentation) in consecutive trials, relative to the
+original continous Events object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>class Latency</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">tmax</span></span></dt>
+<dd><p>Latency object containing ending time and sample of consecutive trials,
+relative to the original continous Events object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>class Latency</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sf</strong> (<em>float</em>) -- Sampling frequency of the corresponding data recording.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add_trial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt_trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latency_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latency0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latency_max</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Add the events trial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evt_trial</strong> (<em>class Events</em>) -- Contains the event(s) to add.</p></li>
+<li><p><strong>latency_min</strong> (<em>class Latency</em>) -- Latency object containing starting time and sample of the trial
+to add, relative to the original continous Events object.</p></li>
+<li><p><strong>latency0</strong> (<em>class Latency</em>) -- Latency object containing time and sample of the 'time0' event
+of the trial to add, relative to the original continous Events object.</p></li>
+<li><p><strong>latency_max</strong> (<em>class Latency</em>) -- Latency object containing ending time and sample of the trial
+to add, relative to the original continous Events object.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">as_continuous</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drop_duplic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return continuous Events.</p>
+<p>Extracts single trials' Events and recreates continuous Events, based
+on tmin Latency: sample latencies in the new continuous events are
+computed by adding sample tmin of each trial to the trial events latencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>drop_duplic</strong> (<em>bool</em>) -- If True, searchs and removes events duplicates in the new continuous
+Events (e.g., when one trial Events contained some of the next trial
+events) (default True).</p></li>
+<li><p><strong>sort</strong> (<em>bool</em>) -- If True, returns events sorted by latency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>evts_as_continuous</strong> (<em>class Events</em>) -- Events object containing continuous events.</p></li>
+<li><p><strong>trial_idx</strong> (<em>1D array</em>) -- Contains the trial index corresponding to each kept single event.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">continuous_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sample,time,code,chan,trialIdx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_trial_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Export continuous events in fname, csv format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Name of the file to save.</p></li>
+<li><p><strong>header</strong> (<em>str</em>) -- String for the first line in csv file, should contain column names
+(default &quot;sample,time,code,chan&quot;).</p></li>
+<li><p><strong>sep</strong> (<em>str</em>) -- Separator between columns (default &quot;,&quot;).</p></li>
+<li><p><strong>save_sample</strong> (<em>bool</em>) -- If True, saves the column containing event sample (default True).</p></li>
+<li><p><strong>save_time</strong> (<em>bool</em>) -- If True, saves the column containing event time (default True).</p></li>
+<li><p><strong>save_code</strong> (<em>bool</em>) -- If True, saves the column containing event code (default True).</p></li>
+<li><p><strong>save_chan</strong> (<em>bool</em>) -- If True, saves the column containing event channel (default True).</p></li>
+<li><p><strong>save_trial_idx</strong> (<em>bool</em>) -- If True, saves a column containing event trial index.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">del_trial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx_trial</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Delete the events trial.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get data segments corresponding to EpochEvents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>2D array</em>) -- Contains continuous data (axis 0: channels, axis 1: time).</p></li>
+<li><p><strong>drop_trials</strong> (<em>list</em><em> | </em><em>1D array</em>) -- Indices of trials that will not be included in data epochs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>epochs</strong> -- Contains data segments (axis 0: trials, axis 1: channels, axis 2: time).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>3D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_trials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx_trial</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return a new EpochEvents with only specified trials.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">nb_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Return the number of single Events.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">nb_trials</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Return the number of trials.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['sample',</span> <span class="pre">'time',</span> <span class="pre">'code',</span> <span class="pre">'chan',</span> <span class="pre">'trial_idx',</span> <span class="pre">'trial_raw_tmin.sample',</span> <span class="pre">'trial_raw_tmin.time',</span> <span class="pre">'trial_raw_t0.sample',</span> <span class="pre">'trial_raw_t0.time',</span> <span class="pre">'trial_raw_tmax.sample',</span> <span class="pre">'trial_raw_tmax.time']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_trial_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Export segmented events in fname, csv format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Name of the file to save.</p></li>
+<li><p><strong>header</strong> (<em>list</em>) -- List of head columns to insert as first line in csv file, should
+contain column names (default [&quot;sample&quot;,&quot;time&quot;,&quot;code&quot;,&quot;chan&quot;,
+&quot;trial_idx&quot;,&quot;trial_raw_tmin.sample&quot;,&quot;trial_raw_tmin.time&quot;,
+&quot;trial_raw_t0.sample&quot;,&quot;trial_raw_t0.time&quot;,&quot;trial_raw_tmax.sample&quot;,
+&quot;trial_raw_tmax.time&quot;]).</p></li>
+<li><p><strong>sep</strong> (<em>str</em>) -- Separator between columns (default &quot;,&quot;).</p></li>
+<li><p><strong>save_sample</strong> (<em>bool</em>) -- If True, saves the column containing event sample (default True).</p></li>
+<li><p><strong>save_time</strong> (<em>bool</em>) -- If True, saves the column containing event time (default True).</p></li>
+<li><p><strong>save_code</strong> (<em>bool</em>) -- If True, saves the column containing event code (default True).</p></li>
+<li><p><strong>save_chan</strong> (<em>bool</em>) -- If True, saves the column containing event channel (default True).</p></li>
+<li><p><strong>save_trial_idx</strong> (<em>bool</em>) -- If True, saves a column containing event trial index (default True).</p></li>
+<li><p><strong>save_tmin</strong> (<em>bool</em>) -- If True, saves the columns containing tmin samples and tmin time
+(default True).</p></li>
+<li><p><strong>save_t0</strong> (<em>bool</em>) -- If True, saves the columns containing t0 samples and t0 time
+(default True).</p></li>
+<li><p><strong>save_tmax</strong> (<em>bool</em>) -- If True, saves the columns containing tmax samples and tmax time
+(default True).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">Events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Events class, storing and manipulating event markers.</p>
+<p>'Events' contains the latency (time and sample), the code and the channel
+of event markers (typically all events of one experiment). Information is
+stored in numpy.ndarrays (Events.lat.sample, Events.lat.time,
+Events.code and Events.chan), in which one given event is stored at the
+same position in all arrays (i.e., information for event 'n' is stored in
+Events.lat.sample[n], Events.lat.sample[n], Events.code[n] and
+Events.chan[n]). For Latency, either time (in seconds) or sample can be
+given. Time/sample, code and chan must be of same length. If sampling frequency
+(sf) is not given, it will be asked when the object is created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> (<em>int</em><em> | </em><em>list of int</em><em> | </em><em>1D array of int</em>) -- Latency in samples of each event marker.</p></li>
+<li><p><strong>time</strong> (<em>float</em><em> | </em><em>list of float</em><em> | </em><em>1D array of float</em>) -- Latency in second of each event marker.</p></li>
+<li><p><strong>code</strong> (<em>int</em><em> | </em><em>float</em><em> | </em><em>str</em><em> | </em><em>list</em><em> | </em><em>1D array</em>) -- Code of each event marker.</p></li>
+<li><p><strong>chan</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>list</em><em> | </em><em>1D array</em>) -- Channel of each event marker.</p></li>
+<li><p><strong>sf</strong> (<em>float</em>) -- Sampling frequency of the corresponding data recording.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_duplic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Add events, occurs in place.</p>
+<p>Adds events to the Events object. If sort is True, events are then
+sorted by latency. If drop_duplic is True, removes duplicated after
+adding events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evt</strong> (<em>class Events</em>) -- Contains the event(s) to add.</p></li>
+<li><p><strong>sort</strong> (<em>bool</em>) -- If True, events are sorted by latency after adding the new events.</p></li>
+<li><p><strong>drop_duplic</strong> (<em>bool</em>) -- If True, new events with same time/sample, code and chan are removed
+using drop_duplicates().</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Return a copy of the current Events.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">del_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx_evt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_del_evt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Delete the events designated by idxEvt, occurs in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idx_evt</strong> (<em>int</em><em> | </em><em>list of int</em>) -- Position(s) of the event(s) to delete.</p></li>
+<li><p><strong>print_del_evt</strong> (<em>bool</em>) -- If True, print the number of deleted events.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">drop_duplicates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Delete duplicated events (i.e., same sample/time, code and chan).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">find_and_del_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samplemin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samplemax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_del_evt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Remove the specified events, occur in place.</p>
+<p>Use find_events to find designated events and removes them from the
+current Events object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evt</strong> (<em>class Events</em>) -- If evt is given, removes events with the same Latency, code and
+chan.</p></li>
+<li><p><strong>sample</strong> (<em>int</em><em> | </em><em>list of int</em><em> | </em><em>1D array of int</em>) -- Sample value(s) of events to remove.</p></li>
+<li><p><strong>time</strong> (<em>float</em><em> | </em><em>list of float</em><em> | </em><em>1D array of float</em>) -- Time value(s) of events to remove.</p></li>
+<li><p><strong>code</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>list of int</em><em> | </em><em>list of str</em>) -- Code value(s) of events to remove.</p></li>
+<li><p><strong>chan</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>list of int</em><em> | </em><em>list of str</em>) -- Channel value(s) of events to remove.</p></li>
+<li><p><strong>tmin</strong> (<em>float</em>) -- Only events occurring after time latency tmin are returned.</p></li>
+<li><p><strong>tmax</strong> (<em>float</em>) -- Only events occurring before time latency tmax are returned.</p></li>
+<li><p><strong>samplemin</strong> (<em>int</em>) -- Only events occurring after sample latency samplemin are returned.</p></li>
+<li><p><strong>samplemax</strong> (<em>int</em>) -- Only events occurring before sample latency samplemax are returned.</p></li>
+<li><p><strong>print_del_evt</strong> (<em>bool</em>) -- If True, print the number of deleted events.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">find_and_get_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samplemin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samplemax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_find_evt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return Events containing only the specified events.</p>
+<p>Use find_events to find designated events and return new Events,
+containing only the selected events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evt</strong> (<em>class obj Events</em>) -- If evt is given, selects events with the same Latency, code and chan.</p></li>
+<li><p><strong>sample</strong> (<em>int</em><em> | </em><em>list of int</em><em> | </em><em>1D array of int</em>) -- Sample value(s) to select.</p></li>
+<li><p><strong>time</strong> (<em>float</em><em> | </em><em>list of float</em><em> | </em><em>1D array of float</em>) -- Time value(s) to select.</p></li>
+<li><p><strong>code</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>list</em><em> | </em><em>1D array</em>) -- Code value(s) to select.</p></li>
+<li><p><strong>chan</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>list</em><em> | </em><em>1D array</em>) -- Channel value(s) to select.</p></li>
+<li><p><strong>tmin</strong> (<em>float</em>) -- Only events occurring after time latency tmin are returned.</p></li>
+<li><p><strong>tmax</strong> (<em>float</em>) -- Only events occurring before time latency tmax are returned.</p></li>
+<li><p><strong>samplemin</strong> (<em>int</em>) -- Only events occurring after sample latency samplemin are returned.</p></li>
+<li><p><strong>samplemax</strong> (<em>int</em>) -- Only events occurring before sample latency samplemax are returned.</p></li>
+<li><p><strong>print_find_evt</strong> (<em>bool</em>) -- If True, print the number of selected events.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Events containing only the designated events.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">find_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samplemin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samplemax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Find the specified event(s) and return the position(s).</p>
+<p>Finds the event(s) whose sample, time, chan or code is equal to the
+given value(s) (e.g., Events.find_events(code='onset') will return
+positions of all events whose code is 'onset'). If more than one
+attribute is filled, finds events satisfying both requirements
+(Events.find_events(code='onset', chan=1) will return positions of
+events whose code is 'onset' AND chan is 1). If more than one value
+is given for one attribute, finds events whose attribute is equal to
+either value (Events.find_events(code='onset', chan=[0,1]) will return
+positions of events whose code is 'onset' and chan is 0 OR 1).
+See also Latency.find_lat for sample and time parameters.
+To find event(s) in a restricted time window, use tmin or samplemin
+and tmax or samplemax parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evt</strong> (<em>class Events</em>) -- If evt is given, finds events with the same Latency, code and chan.
+In this case, other parameters are ignored.</p></li>
+<li><p><strong>sample</strong> (<em>int</em><em> | </em><em>list of  int</em><em> | </em><em>1D array of int</em>) -- Sample value(s) to look for.</p></li>
+<li><p><strong>time</strong> (<em>float</em><em> | </em><em>list of float</em><em> | </em><em>1D array of float</em>) -- Time value(s) to look for.</p></li>
+<li><p><strong>code</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>list</em><em> | </em><em>1D array</em>) -- Code value(s) to look for.</p></li>
+<li><p><strong>chan</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>list</em><em> | </em><em>1D array</em>) -- Channel value(s) to look for.</p></li>
+<li><p><strong>tmin</strong> (<em>float</em>) -- Only events occurring after time latency tmin are returned.</p></li>
+<li><p><strong>tmax</strong> (<em>float</em>) -- Only events occurring before time latency tmax are returned.</p></li>
+<li><p><strong>samplemin</strong> (<em>int</em>) -- Only events occurring after sample latency samplemin are returned.</p></li>
+<li><p><strong>samplemax</strong> (<em>int</em>) -- Only events occurring before sample latency samplemax are returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Position(s) of the found events.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_duplicates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Get duplicated events (i.e., same sample/time, code and chan).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx_evt</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get the events designated by idxEvt and returns them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx_evt</strong> (<em>int</em><em> | </em><em>list of int</em>) -- Position(s) of the event(s) to get.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Events containing only the designated events.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">nb_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Return the number of single events.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code_t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_events0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Segment events on the interval [tmin,tmax] around code_t0 events.</p>
+<p>Epoch segmentation: events are segmented on the interval between tmin
+and tmax, around the time latency of the reference (t0) events.
+Reference events are specified either by event code, i.e., events
+whose code is equal to code_t0, or by events positions, i.e., events
+at positions corresponding to pos_events0.
+Events of each segmented epoch are stored in an EpochEvents object
+(class EpochEvents).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code_t0</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>list</em>) -- Code of events to use as reference (t0) events. Does not accept
+dict_values.</p></li>
+<li><p><strong>pos_events0</strong> (<em>int</em><em> | </em><em>list</em>) -- Position of events to use as reference (t0) events.</p></li>
+<li><p><strong>tmin</strong> (<em>float</em>) -- Start time (in seconds) of the epoch segmentation,
+relative to the reference events (default 0).</p></li>
+<li><p><strong>tmax</strong> (<em>float</em>) -- End time (in seconds) of the epoch segmentation,
+relative to the reference events (default 1s).</p></li>
+<li><p><strong>print_epochs</strong> (<em>bool</em>) -- If True, print the number of epochs (default is True).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>EpochEvents object containing segmented events.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ep_evts</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">sort_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Sort the single events by latency, occurs in place.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">to_bva_markers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Save file in vmrk format from Brain Vision (format '.Markers').</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Name of the vmrk file to save.</p></li>
+<li><p><strong>event_type</strong> (<em>dict</em>) -- Specify the type of marker (e.g., 'Stim', 'EMG') for each marker
+code. Type 'Comments' will be assigned to markers with no type specified.</p></li>
+<li><p><strong>chan_names</strong> (<em>dict</em>) -- Specify the name of the channel for each channel number in events
+(e.g., chan_names = {-1: 'All'}). Channel numbers are used when no
+channel name is specified.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">to_bva_vmrk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Save file in vmrk format from Brain Vision (format '.vmrk').</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Name of the vmrk file to save.</p></li>
+<li><p><strong>event_type</strong> (<em>dict</em>) -- Specify the type of marker (e.g., 'Stim', 'EMG') for each marker
+code. Type 'Comments' will be assigned to markers with no type specified.</p></li>
+<li><p><strong>chan_names</strong> (<em>dict</em>) -- Specify the name of the channel for each channel number in events
+(e.g., chan_names = {-1: 'All'}). Channel numbers are used when no
+channel name is specified.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sample,time,code,chan'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_trial_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Export events in fname, csv format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Name of the file to save.</p></li>
+<li><p><strong>header</strong> (<em>str</em>) -- String for the first line in csv file, should contain column names
+(default &quot;sample,time,code,chan&quot;).</p></li>
+<li><p><strong>sep</strong> (<em>str</em>) -- Separator between columns (default &quot;,&quot;).</p></li>
+<li><p><strong>save_sample</strong> (<em>bool</em>) -- If True, save the column containing event sample (default True).</p></li>
+<li><p><strong>save_time</strong> (<em>bool</em>) -- If True, save the column containing event time (default True).</p></li>
+<li><p><strong>save_code</strong> (<em>bool</em>) -- If True, save the column containing event code (default True).</p></li>
+<li><p><strong>save_chan</strong> (<em>bool</em>) -- If True, save the column containing event channel (default True).</p></li>
+<li><p><strong>save_trial_idx</strong> (<em>bool</em>) -- If True, save a column containing event trial index. Can be True
+only for events which have been segmented already (default False).</p></li>
+<li><p><strong>trial_idx</strong> (<em>list</em><em> | </em><em>1D array</em>) -- Contain the trial index for each event, should be provided
+when save_trial_idx is set to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">to_txt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Type,</span> <span class="pre">Description,</span> <span class="pre">Position,</span> <span class="pre">Length,</span> <span class="pre">Channel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Export events in fname, text format to be read in BVA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Name of the file to save.</p></li>
+<li><p><strong>event_type</strong> (<em>dict</em>) -- Specify the type of marker (e.g., 'Stim', 'EMG') for each marker
+code. Type 'Comments' will be assigned to markers with no type specified.</p></li>
+<li><p><strong>header</strong> (<em>str</em>) -- String for the first line in csv file, should contain column names
+(default &quot;Type, Description, Position, Length, Channel&quot;).</p></li>
+<li><p><strong>sep</strong> (<em>str</em>) -- Separator between columns (default &quot;,&quot;).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">find_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_serie</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return index such that timeSerie[index] is the closest value
+of timeSerie to timeValue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_value</strong> (<em>float</em>) -- </p></li>
+<li><p><strong>time_serie</strong> (<em>1D array</em><em> | </em><em>list</em>) -- </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>index</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">load_continuous</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headerlines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottomlines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Load continuous events.</p>
+<p>Load continuous events from text file fname. Fname must contain at least:
+- one column containing events samples or events times
+- one column containing events code
+- one column containing events channel</p>
+<p>Additional columns in fname can contain the events' trial index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Name of the file to load.</p></li>
+<li><p><strong>sep</strong> (<em>str</em>) -- Separator between columns (default &quot;,&quot;).</p></li>
+<li><p><strong>sf</strong> (<em>int</em>) -- Sampling frequency (default None).</p></li>
+<li><p><strong>col_sample</strong> (<em>int</em>) -- The column number containing events time sample (default None).</p></li>
+<li><p><strong>col_time</strong> (<em>int</em>) -- The column number containing events time (default None).</p></li>
+<li><p><strong>col_code</strong> (<em>int</em>) -- The column number containing events code (default None).</p></li>
+<li><p><strong>col_chan</strong> (<em>int</em>) -- The column number containing events channel name/number (default None).</p></li>
+<li><p><strong>headerlines</strong> -- Number of headerlines to skip (default 1).</p></li>
+<li><p><strong>bottomlines</strong> (<em>int</em>) -- Number of bottomlines to skip (default 0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Events object containing read events.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>class Events</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">load_segmented</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headerlines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_trial_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_tmin_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_tmin_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_t0_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_t0_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_tmax_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_tmax_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Load segmented events.</p>
+<p>Load segmented events from text file fname. Fname must contain at least:
+- one column containing events samples or events times
+- one column containing events code
+- one column containing events channel
+- one column containing trial index</p>
+<p>Additional columns can contain the time of reference of each trial in the
+corresponding continuous raw file:
+- the sample corresponding to trial's start time in continuous (tmin sample)
+- the time corresponding to trial's start time in continuous (tmin time)
+- the sample corresponding to trial's time 0 in continuous (t0 sample)
+- the time corresponding to trial's time 0 in continuous (t0 time)
+- the sample corresponding to trial's end time in continuous (tmax sample)
+- the time corresponding to trial's end time in continuous (tmax time)</p>
+<p>It is necessary to provide sampling frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) -- Name of the file to load.</p></li>
+<li><p><strong>headerLines</strong> (<em>int</em>) -- Number of headerlines to skip (default 1).</p></li>
+<li><p><strong>sep</strong> (<em>str</em>) -- Separator between columns (default &quot;,&quot;).</p></li>
+<li><p><strong>sf</strong> (<em>int</em>) -- Sampling frequency (default None).</p></li>
+<li><p><strong>col_code</strong> (<em>int</em>) -- The column number containing events code (default None).</p></li>
+<li><p><strong>col_sample</strong> (<em>int</em>) -- The column number containing events time sample (default None).</p></li>
+<li><p><strong>col_sample</strong> -- The column number containing events time (default None).</p></li>
+<li><p><strong>col_chan</strong> (<em>int</em>) -- The column number containing events channel name/number (default None).</p></li>
+<li><p><strong>col_trial_idx</strong> (<em>int</em>) -- The column number containing trial index (default None).</p></li>
+<li><p><strong>col_tmin_sample</strong> (<em>int</em>) -- The column number containing sample of trial's start time (default None).</p></li>
+<li><p><strong>col_tmin_time</strong> (<em>int</em>) -- The column number containing time of trial's start time (default None).</p></li>
+<li><p><strong>col_t0_sample</strong> (<em>int</em>) -- The column number containing sample of trial's time 0 (default None).</p></li>
+<li><p><strong>col_t0_time</strong> (<em>int</em>) -- The column number containing time of trial's time 0 (default None).</p></li>
+<li><p><strong>col_tmax_sample</strong> (<em>int</em>) -- The column number containing sample of trial's end time (default None).</p></li>
+<li><p><strong>col_tmax_time</strong> (<em>int</em>) -- The column number containing time of trial's end time (default None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>EpochEvents object containing read events.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>class EpochEvents</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute times serie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmin</strong> (<em>float</em>) -- Starting time.</p></li>
+<li><p><strong>tmax</strong> (<em>float</em>) -- Ending time.</p></li>
+<li><p><strong>sf</strong> (<em>int</em><em> | </em><em>float</em>) -- Sampling frequency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>time_serie</strong> -- Times array in seconds.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>1D array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="visualization-and-manual-correction">
+<h2>Visualization and manual correction<a class="headerlink" href="#visualization-and-manual-correction" title="Permalink to this headline">¶</a></h2>
+<p>This file is part of Myonset.</p>
+<p>Myonset is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>Myonset is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with Myonset. If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">myonset.</span></span><span class="sig-name descname"><span class="pre">Viz</span></span></dt>
+<dd><p>alias of <a class="reference internal" href="#myonset.viz.viz_emg.VizApplication" title="myonset.viz.viz_emg.VizApplication"><code class="xref py py-class docutils literal notranslate"><span class="pre">myonset.viz.viz_emg.VizApplication</span></code></a></p>
+</dd></dl>
+
+<span class="target" id="module-myonset.viz.viz_emg"></span><p>Created on Mon Jul 21 17:23:41 2014</p>
+<p>&#64;author: Laure Spieser and Boris Burle
+Laboratoire de Neurosciences Cognitives
+UMR 7291, CNRS, Aix-Marseille Université
+3, Place Victor Hugo
+13331 Marseille cedex 3</p>
+<p>This file is part of Myonset.</p>
+<p>Myonset is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>Myonset is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with Myonset. If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="myonset.viz.viz_emg.VizApplication">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">myonset.viz.viz_emg.</span></span><span class="sig-name descname"><span class="pre">VizApplication</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.viz.viz_emg.VizApplication" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="myonset.viz.viz_emg.VizApplication.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code_t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code_movable_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'onset'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code_movable_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'offset'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[0,</span> <span class="pre">1],</span> <span class="pre">[0,</span> <span class="pre">1],</span> <span class="pre">[2,</span> <span class="pre">3],</span> <span class="pre">[2,</span> <span class="pre">3]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_chan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#myonset.viz.viz_emg.VizApplication.load_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data and sets viz window view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>2D array</em>) -- Data array, dimensions should be channels x time.</p></li>
+<li><p><strong>events</strong> (<em>Events object</em>) -- Events corresponding to data.</p></li>
+<li><p><strong>code_t0</strong> (<em>list</em><em> | </em><em>1D array</em>) -- Event code(s) to use in events to define trials (e.g., stimulus code
+used for segmentation).</p></li>
+<li><p><strong>tmin</strong> (<em>float</em>) -- Minimum time to plot, relative to code_t0 event. To change tmin after
+plotting, use &quot;Set new time range&quot; in Configuration panel (default -0.5s).</p></li>
+<li><p><strong>tmax</strong> (<em>float</em>) -- Maximum time to plot, relative to code_t0 event. To change tmax after
+plotting, use &quot;Set new time range&quot; in Configuration panel (default 1.5s).</p></li>
+<li><p><strong>channels</strong> (<em>list of int</em>) -- List of channel indices to represent, if equal to 'all', all channels
+of data are used (default is 'all').</p></li>
+<li><p><strong>code_movable_1</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>float</em>) -- Code of events with which the user can interact. All events whose code
+is equal to 'code_movable_1' are displayed in dark blue and can be
+moved (left click + drag), deleted (right click), or inserted
+(Ctrl + left click) (default is 'onset').</p></li>
+<li><p><strong>code_movable_2</strong> (<em>int</em><em> | </em><em>str</em><em> | </em><em>float</em>) -- Code of events with which the user can interact. All events whose code
+is equal to 'code_movable_2' are displayed in light blue and can be
+moved (left click + drag), deleted (right click), or inserted
+(Ctrl + right click) (default is 'offset').</p></li>
+<li><p><strong>sync_chan</strong> (<em>list</em>) -- List of channels to synchronise vertical scales. The length of sync_chan
+should be equal to the number of displayed channels, and specify, for
+each channel, the list of channels to synchronize. For example, the
+default list [[0,1],[0,1],[2,3],[2,3]] synchronizes channels 0 and 1,
+and channels 2 and 3. Set sync_chan to [[0],[1],[2],[3]] for no
+synchronization of vertical scales (default is [[0,1],[0,1],[2,3],[2,3]]).</p></li>
+<li><p><strong>group_chan</strong> (<em>bool</em>) -- if True, group channels plots of synchronized channels. Can only apply
+to contiguous channels, if non contiguous channels are synchronized,
+group_chan is set to False (default is True).</p></li>
+<li><p><strong>list_trials</strong> (<em>list</em>) -- List of trials to display, if None, display all trials (defauls is
+None).</p></li>
+<li><p><strong>random_order</strong> (<em>bool</em>) -- If True, display trials in random order (note that epoch number in
+viz window does not correspond to true epoch number in that case).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">API reference</a><ul>
+<li><a class="reference internal" href="#module-myonset.use_mne">Signal preprocessing</a></li>
+<li><a class="reference internal" href="#module-myonset">Signal processing and automatic detection</a></li>
+<li><a class="reference internal" href="#tools-for-events">Tools for events</a></li>
+<li><a class="reference internal" href="#visualization-and-manual-correction">Visualization and manual correction</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="guide_vizEMG.html"
+                          title="previous chapter">Onsets and offsets visualization and manual correction</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="guide_vizEMG.html" title="Onsets and offsets visualization and manual correction"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Myonset 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API reference</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Laure Spieser and Boris Burle.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

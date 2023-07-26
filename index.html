@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+
+<html lang="english">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Documentation &#8212; Myonset 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to install" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="How to install"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Myonset 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Documentation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <figure class="align-default">
+<img alt="_images/logo_bleu_myonset.svg" src="_images/logo_bleu_myonset.svg" /></figure>
+<p>Myonset is a python package to process and detect signal burst(s) onset and offset, especially developed for electromyographic (EMG) signal.
+Myonset implements tools for signal preprocessing, automatic onset and offset detection, as well as vizualisation and correction of onset and offset latencies.</p>
+<section id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">How to install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-through-anaconda">Installing through Anaconda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Myonset QuickStart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#import-emg-data">1. Import EMG data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#extract-events">2. Extract events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#pre-process-emg-signals">3. Pre-process EMG signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#automatic-detection-of-emg-onsets-and-offsets">4. Automatic detection of EMG onsets and offsets:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#visualization-and-correction-of-automatic-onset-and-offset-detection-markers">5. Visualization and correction of automatic onset and offset detection markers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide_emgtools.html">Automatic detection of EMG busts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide_emgtools.html#methods-overview">1. Methods overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide_emgtools.html#detailed-methods">2. Detailed methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide_emgtools.html#recommended-methods-combination">3. Recommended methods combination</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide_events.html">Events class and functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide_events.html#the-events-class">1. The <code class="docutils literal notranslate"><span class="pre">Events</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide_events.html#the-epochevents-class">2. The <code class="docutils literal notranslate"><span class="pre">EpochEvents</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide_events.html#functions-for-events">3. Functions for events</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide_vizEMG.html">Onsets and offsets visualization and manual correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide_vizEMG.html#starting-viz-window">1. Starting Viz window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide_vizEMG.html#correction-of-event-markers">2. Correction of event markers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide_vizEMG.html#retrieving-corrected-event-markers">3. Retrieving corrected event markers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-myonset.use_mne">Signal preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-myonset">Signal processing and automatic detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#tools-for-events">Tools for events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#visualization-and-manual-correction">Visualization and manual correction</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="#">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Documentation</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="installation.html"
+                          title="next chapter">How to install</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="How to install"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Myonset 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Documentation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Laure Spieser and Boris Burle.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>
